@@ -1,7 +1,7 @@
-import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { soundService } from '../../utils/audio';
 import { PillVisual } from '../common/PillVisual';
+import { formatScheduleDate, getTodayDateString } from '../../utils/date';
 import {
   AlertTriangle,
   BatteryCharging,
@@ -13,6 +13,7 @@ import {
   Pill,
   Plus,
   RefreshCw,
+  RotateCcw,
   Share2,
   ShieldCheck,
   UserCheck,
@@ -27,6 +28,7 @@ export const CaregiverDashboard: React.FC<{
     alerts,
     claimAlert,
     markTakenByCaregiver,
+    undoTaken,
     setShowAddMedicine,
     setShowRefillWhatsAppModal,
     triggerSimulatedReminder,
@@ -35,10 +37,12 @@ export const CaregiverDashboard: React.FC<{
   } = useApp();
 
   const isHindi = language === 'hi';
+  const todayDateStr = getTodayDateString();
 
-  const takenCount = doses.filter(d => d.status === 'taken').length;
-  const pendingCount = doses.filter(d => d.status === 'pending').length;
-  const missedCount = doses.filter(d => d.status === 'missed').length;
+  const todayDoses = doses.filter(d => d.date === todayDateStr);
+  const takenCount = todayDoses.filter(d => d.status === 'taken').length;
+  const pendingCount = todayDoses.filter(d => d.status === 'pending').length;
+  const missedCount = todayDoses.filter(d => d.status === 'missed').length;
 
   const missedAlert = alerts.find(a => a.type === 'missed_dose' && a.status !== 'resolved');
   const lowStockAlert = alerts.find(a => a.type === 'low_stock');
@@ -94,7 +98,7 @@ export const CaregiverDashboard: React.FC<{
 
         {/* Date Bar */}
         <div className="mt-3 flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
-          <span className="font-semibold text-slate-700">सोमवार, 18 अक्टूबर 2026</span>
+          <span className="font-semibold text-slate-700">{formatScheduleDate(todayDateStr, language)}</span>
           <span className="text-emerald-700 font-medium">रीयल-टाइम सिंक सक्रिय</span>
         </div>
       </div>

@@ -31,31 +31,39 @@ export const ElderSnoozeModal: React.FC = () => {
         </p>
 
         {/* Large Snooze Options matching Storyboard Screen 3 */}
-        <div className="w-full space-y-3.5 mt-6">
+        <div className="w-full space-y-3 mt-4">
           <button
-            onClick={() => targetDose && snoozeDose(targetDose.id, 5)}
-            className="w-full h-16 rounded-2xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-900 font-black text-2xl flex items-center justify-center transition-all active:scale-[0.98]"
+            onClick={() => targetDose && snoozeDose(targetDose.id, 5, false)}
+            className="w-full h-15 rounded-2xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-900 font-black text-xl flex items-center justify-center transition-all active:scale-[0.98]"
           >
-            {isHindi ? '5 मिनट' : '5 Minutes'}
+            {isHindi ? '5 मिनट बाद याद दिलाएं' : '5 Minutes Later'}
           </button>
 
           <button
-            onClick={() => targetDose && snoozeDose(targetDose.id, 10)}
-            className="w-full h-16 rounded-2xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-900 font-black text-2xl flex items-center justify-center transition-all active:scale-[0.98]"
+            onClick={() => targetDose && snoozeDose(targetDose.id, 10, false)}
+            className="w-full h-15 rounded-2xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-900 font-black text-xl flex items-center justify-center transition-all active:scale-[0.98]"
           >
-            {isHindi ? '10 मिनट' : '10 Minutes'}
+            {isHindi ? '10 मिनट बाद याद दिलाएं' : '10 Minutes Later'}
           </button>
 
           <button
-            onClick={() => targetDose && snoozeDose(targetDose.id, 30)}
-            className="w-full h-16 rounded-2xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-900 font-black text-2xl flex items-center justify-center transition-all active:scale-[0.98]"
+            onClick={() => targetDose && snoozeDose(targetDose.id, 30, false)}
+            className="w-full h-15 rounded-2xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-900 font-black text-xl flex items-center justify-center transition-all active:scale-[0.98]"
           >
-            {isHindi ? '30 मिनट' : '30 Minutes'}
+            {isHindi ? '30 मिनट बाद याद दिलाएं' : '30 Minutes Later'}
+          </button>
+
+          {/* Quick Demo Test Fast Forward */}
+          <button
+            onClick={() => targetDose && snoozeDose(targetDose.id, 0.1, true)}
+            className="w-full py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-amber-300"
+          >
+            <span>⚡ 5 सेकंड टेस्ट स्नूज़ (Test Auto Re-Alarm in 5s)</span>
           </button>
 
           <button
             onClick={() => setShowSnoozeModal(false)}
-            className="w-full py-4 text-base font-bold text-slate-600 hover:text-slate-800"
+            className="w-full py-3 text-base font-bold text-slate-600 hover:text-slate-800"
           >
             {isHindi ? 'रद्द करें' : 'Cancel'}
           </button>

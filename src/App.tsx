@@ -16,6 +16,7 @@ import { CaregiverHistory } from './components/caregiver/CaregiverHistory';
 import { CaregiverFamily } from './components/caregiver/CaregiverFamily';
 import { AddMedicineModal } from './components/caregiver/AddMedicineModal';
 import { WelcomeModal } from './components/onboarding/WelcomeModal';
+import { DuplicateDoseModal } from './components/elder/DuplicateDoseModal';
 import {
   Bell,
   Heart,
@@ -45,7 +46,7 @@ const MainApp: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span className="font-semibold">
-              रीयल-टाइम सिंक (Live 2-Way Sync):
+              डेमो सिंक (Local Demo · Multi-Tab Broadcast Sync):
             </span>
             <span className="text-slate-300">
               {role === 'elder'
@@ -121,6 +122,7 @@ const MainApp: React.FC = () => {
       <ElderSnoozeModal />
       <ElderCallModal />
       <ElderPrivacyModal />
+      <DuplicateDoseModal />
       <AddMedicineModal />
       <WelcomeModal isOpen={showWelcome} onClose={() => setShowWelcome(false)} />
     </div>

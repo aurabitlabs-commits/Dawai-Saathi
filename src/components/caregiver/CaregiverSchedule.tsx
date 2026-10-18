@@ -1,30 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { PillVisual } from '../common/PillVisual';
-import { Check, CheckCircle2, Clock, Edit3, Plus, Trash2 } from 'lucide-react';
+import { formatScheduleDate, getTodayDateString, getWeekDaysStrip } from '../../utils/date';
+import { Check, CheckCircle2, Clock, Edit3, Plus, RotateCcw, Trash2 } from 'lucide-react';
 
 export const CaregiverSchedule: React.FC = () => {
   const {
     medicines,
-    doses,
+    selectedDate,
+    setSelectedDate,
+    getDosesForDate,
     setShowAddMedicine,
     setEditingMedicine,
     markTakenByCaregiver,
+    undoTaken,
     language,
   } = useApp();
   const isHindi = language === 'hi';
 
-  const [activeDateIndex, setActiveDateIndex] = useState(1); // Monday 20th Oct or Sunday 19th
-
-  const weekDays = [
-    { day: 'Sun', date: '19' },
-    { day: 'Mon', date: '20' },
-    { day: 'Tue', date: '21' },
-    { day: 'Wed', date: '22' },
-    { day: 'Thu', date: '23' },
-    { day: 'Fri', date: '24' },
-    { day: 'Sat', date: '25' },
-  ];
+  const weekStrip = getWeekDaysStrip();
+  const dosesForDate = getDosesForDate(selectedDate);
+  const isToday = selectedDate === getTodayDateString();
 
   return (
     <div className="flex flex-col min-h-full pb-20">
@@ -35,8 +31,8 @@ export const CaregiverSchedule: React.FC = () => {
             <h1 className="text-xl font-bold text-slate-900">
               {isHindi ? 'दवाइयों का शेड्यूल' : 'Medicine Schedule'}
             </h1>
-            <p className="text-xs text-slate-500 font-medium">
-              Today, 18 Oct 2026
+            <p className="text-xs text-slate-500 font-semibold mt-0.5">
+              {formatScheduleDate(selectedDate, language)}
             </p>
           </div>
 
@@ -52,22 +48,29 @@ export const CaregiverSchedule: React.FC = () => {
           </button>
         </div>
 
-        {/* Date Strip matching Storyboard Screen 2 */}
+        {/* Dynamic Rolling Week Strip */}
         <div className="mt-4 flex items-center justify-between gap-1 overflow-x-auto pb-1">
-          {weekDays.map((item, index) => {
-            const isSelected = index === activeDateIndex;
+          {weekStrip.map(item => {
+            const isSelected = item.fullDate === selectedDate;
             return (
               <button
-                key={item.date}
-                onClick={() => setActiveDateIndex(index)}
-                className={`flex flex-col items-center justify-center min-w-[42px] py-2 px-1 rounded-xl text-xs font-semibold transition-all ${
+                key={item.fullDate}
+                onClick={() => setSelectedDate(item.fullDate)}
+                className={`flex flex-col items-center justify-center min-w-[44px] py-2 px-1 rounded-xl text-xs font-semibold transition-all relative ${
                   isSelected
                     ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    : 'text-slate-600 hover:bg-slate-100 bg-slate-50'
                 }`}
               >
-                <span className="text-[10px] opacity-80">{item.day}</span>
-                <span className="text-sm font-bold mt-0.5">{item.date}</span>
+                <span className="text-[10px] opacity-80">{item.dayName}</span>
+                <span className="text-sm font-bold mt-0.5">{item.dayNum}</span>
+                {item.isToday && (
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
+                      isSelected ? 'bg-amber-300' : 'bg-emerald-500'
+                    }`}
+                  />
+                )}
               </button>
             );
           })}
@@ -77,23 +80,30 @@ export const CaregiverSchedule: React.FC = () => {
       {/* Medicines Schedule List */}
       <div className="p-5 space-y-3.5">
         <div className="flex items-center justify-between text-xs text-slate-500 font-semibold px-1">
-          <span>{medicines.length} दवाइयाँ सक्रिय (Active)</span>
+          <span>{dosesForDate.length} दवाइयाँ शेड्यूल में हैं</span>
           <span>समय अनुसार क्रमित</span>
         </div>
 
-        {medicines.map(med => {
-          const dose = doses.find(d => d.medicineId === med.id);
-          const isTaken = dose?.status === 'taken';
+        {dosesForDate.map(dose => {
+          const isTaken = dose.status === 'taken';
+          const isMissed = dose.status === 'missed';
+          const med = medicines.find(m => m.id === dose.medicineId);
 
           return (
             <div
-              key={med.id}
-              className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-3"
+              key={dose.id}
+              className={`p-4 rounded-2xl border shadow-xs flex items-center justify-between gap-3 transition-all ${
+                isTaken
+                  ? 'bg-white border-slate-200'
+                  : isMissed
+                  ? 'bg-red-50/70 border-red-200'
+                  : 'bg-white border-slate-200'
+              }`}
             >
               <div className="flex items-center gap-3">
                 <PillVisual
-                  stripImage={med.stripImage}
-                  pillAppearance={med.pillAppearance}
+                  stripImage={dose.stripImage || med?.stripImage}
+                  pillAppearance={dose.pillAppearance || med?.pillAppearance}
                   size="md"
                   language={language}
                 />
@@ -101,51 +111,67 @@ export const CaregiverSchedule: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-extrabold text-blue-700 tabular-nums">
-                      {med.time}
+                      {dose.time}
                     </span>
-                    {med.important && (
+                    {med?.important && (
                       <span className="text-[10px] font-bold text-red-700 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded">
                         ज़रूरी
                       </span>
                     )}
+                    {isTaken && (
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                        ✓ {dose.takenAt || 'Taken'}
+                      </span>
+                    )}
                   </div>
                   <h3 className="text-base font-bold text-slate-900 leading-tight mt-0.5">
-                    {med.name}
+                    {dose.medicineName}
                   </h3>
                   <p className="text-xs font-semibold text-slate-500">
-                    {med.dosage} · {med.notes || 'खाने के बाद'}
+                    {dose.dosage} · {med?.notes || 'खाने के बाद'}
                   </p>
-                  {med.pillAppearance && (
+                  {dose.pillAppearance && (
                     <p className="text-[10px] font-bold text-slate-600 mt-0.5">
-                      पहचान: {isHindi ? `${med.pillAppearance.colorLabelHi} ${med.pillAppearance.shapeLabelHi}` : `${med.pillAppearance.colorLabelEn} ${med.pillAppearance.shapeLabelEn}`}
-                      {med.pillAppearance.imprintText && ` (${med.pillAppearance.imprintText})`}
+                      पहचान: {isHindi ? `${dose.pillAppearance.colorLabelHi} ${dose.pillAppearance.shapeLabelHi}` : `${dose.pillAppearance.colorLabelEn} ${dose.pillAppearance.shapeLabelEn}`}
+                      {dose.pillAppearance.imprintText && ` (${dose.pillAppearance.imprintText})`}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Action buttons: Edit pill/medicine + Mark status */}
+              {/* Action buttons: Edit medicine + Mark status / Undo */}
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    setEditingMedicine(med);
-                    setShowAddMedicine(true);
-                  }}
-                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
-                  title="दवा व फ़ोटो एडिट करें"
-                >
-                  <Edit3 className="w-4 h-4" />
-                </button>
+                {med && (
+                  <button
+                    onClick={() => {
+                      setEditingMedicine(med);
+                      setShowAddMedicine(true);
+                    }}
+                    className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+                    title="दवा व फ़ोटो एडिट करें"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+                )}
 
                 {isTaken ? (
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                    <Check className="w-5 h-5 stroke-[2.5]" />
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <Check className="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <button
+                      onClick={() => undoTaken(dose.id, 'Neha (Caregiver)')}
+                      className="p-1.5 text-xs text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Undo / स्थिति वापस करें"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ) : (
                   <button
-                    onClick={() => dose && markTakenByCaregiver(dose.id)}
+                    onClick={() => markTakenByCaregiver(dose.id)}
                     className="w-8 h-8 rounded-full border-2 border-slate-300 hover:border-emerald-500 hover:bg-emerald-50 flex items-center justify-center text-slate-400 hover:text-emerald-600 transition-colors"
-                    title="मार्क करें"
+                    title="मार्क करें (Mark as taken)"
                   >
                     <Check className="w-4 h-4 opacity-0 hover:opacity-100" />
                   </button>

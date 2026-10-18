@@ -1,4 +1,5 @@
 import { CaregiverAlert, DoseEvent, ElderProfile, FamilyMember, Medicine } from '../types';
+import { getTodayDateString } from '../utils/date';
 
 export const INITIAL_ELDER: ElderProfile = {
   id: 'elder-1',
@@ -116,15 +117,19 @@ export const INITIAL_MEDICINES: Medicine[] = [
   },
 ];
 
+const today = getTodayDateString();
+const yesterday = getTodayDateString(-1);
+
 export const INITIAL_DOSES: DoseEvent[] = [
+  // Today's doses
   {
-    id: 'dose-1',
+    id: `dose-today-1`,
     medicineId: 'med-1',
     medicineName: 'Amlodipine 5mg',
     medicineHindiName: 'एम्लोडिपिन 5mg',
     dosage: '1 Tablet',
     time: '08:00 AM',
-    date: '2026-10-18',
+    date: today,
     status: 'taken',
     takenAt: '08:12 AM',
     markedBy: 'Papa',
@@ -139,15 +144,18 @@ export const INITIAL_DOSES: DoseEvent[] = [
       imprintText: '5',
     },
     note: 'Dadaji ne samay par le li',
+    auditHistory: [
+      { timestamp: '08:12 AM', action: 'confirmed_taken', actor: 'Papa', details: 'Dose taken on elder device' },
+    ],
   },
   {
-    id: 'dose-2',
+    id: `dose-today-2`,
     medicineId: 'med-2',
     medicineName: 'Metformin 500mg',
     medicineHindiName: 'मेटफॉर्मिन 500mg',
     dosage: '1 Tablet',
     time: '09:00 AM',
-    date: '2026-10-18',
+    date: today,
     status: 'missed',
     stripImage: '/src/assets/images/medicine_strip_sample_1792322618845.jpg',
     pillAppearance: {
@@ -160,15 +168,18 @@ export const INITIAL_DOSES: DoseEvent[] = [
       imprintText: '500',
     },
     note: 'Grace period ended, alert sent to family',
+    auditHistory: [
+      { timestamp: '09:30 AM', action: 'missed', actor: 'System', details: 'No response after 30m grace period' },
+    ],
   },
   {
-    id: 'dose-3',
+    id: `dose-today-3`,
     medicineId: 'med-3',
     medicineName: 'Vitamin D3 60k',
     medicineHindiName: 'विटामिन D3',
     dosage: '1 Capsule',
     time: '01:00 PM',
-    date: '2026-10-18',
+    date: today,
     status: 'pending',
     stripImage: '/src/assets/images/medicine_pill_capsule_gold_1792323535542.jpg',
     pillAppearance: {
@@ -181,13 +192,13 @@ export const INITIAL_DOSES: DoseEvent[] = [
     },
   },
   {
-    id: 'dose-4',
+    id: `dose-today-4`,
     medicineId: 'med-4',
     medicineName: 'Atorvastatin 10mg',
     medicineHindiName: 'एटोरवास्टेटिन 10mg',
     dosage: '1 Tablet',
     time: '08:00 PM',
-    date: '2026-10-18',
+    date: today,
     status: 'pending',
     pillAppearance: {
       shape: 'oval',
@@ -198,6 +209,43 @@ export const INITIAL_DOSES: DoseEvent[] = [
       shapeLabelEn: 'Oval Tablet',
       imprintText: '10',
     },
+  },
+  // Yesterday's historical doses
+  {
+    id: `dose-yest-1`,
+    medicineId: 'med-1',
+    medicineName: 'Amlodipine 5mg',
+    medicineHindiName: 'एम्लोडिपिन 5mg',
+    dosage: '1 Tablet',
+    time: '08:00 AM',
+    date: yesterday,
+    status: 'taken',
+    takenAt: '08:05 AM',
+    markedBy: 'Papa',
+  },
+  {
+    id: `dose-yest-2`,
+    medicineId: 'med-2',
+    medicineName: 'Metformin 500mg',
+    medicineHindiName: 'मेटफॉर्मिन 500mg',
+    dosage: '1 Tablet',
+    time: '09:00 AM',
+    date: yesterday,
+    status: 'taken',
+    takenAt: '09:15 AM',
+    markedBy: 'Papa',
+  },
+  {
+    id: `dose-yest-3`,
+    medicineId: 'med-3',
+    medicineName: 'Vitamin D3 60k',
+    medicineHindiName: 'विटामिन D3',
+    dosage: '1 Capsule',
+    time: '01:00 PM',
+    date: yesterday,
+    status: 'taken',
+    takenAt: '01:20 PM',
+    markedBy: 'Papa',
   },
 ];
 

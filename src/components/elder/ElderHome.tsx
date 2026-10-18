@@ -12,6 +12,8 @@ import {
   X,
 } from 'lucide-react';
 
+import { formatScheduleDate, getTodayDateString } from '../../utils/date';
+
 export const ElderHome: React.FC = () => {
   const {
     elder,
@@ -25,10 +27,11 @@ export const ElderHome: React.FC = () => {
   } = useApp();
 
   const isHindi = language === 'hi';
+  const todayDateStr = getTodayDateString();
 
   // Find next pending or missed dose
-  const nextDose = doses.find(d => d.status === 'pending' || d.status === 'missed') || doses[0];
-  const completedDoses = doses.filter(d => d.status === 'taken');
+  const nextDose = doses.find(d => d.date === todayDateStr && (d.status === 'pending' || d.status === 'missed')) || doses[0];
+  const completedDoses = doses.filter(d => d.date === todayDateStr && d.status === 'taken');
 
   const handleSpeakOverview = () => {
     soundService.playBellChime();
@@ -52,8 +55,7 @@ export const ElderHome: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold tracking-wide text-amber-800 flex items-center gap-1.5">
-              <span>सोमवार, 18 अक्टूबर 2026</span>
-              <span className="text-xs bg-amber-200/60 text-amber-900 px-2 py-0.5 rounded-full">आज</span>
+              <span>{formatScheduleDate(todayDateStr, language)}</span>
             </p>
             <h1 className="text-3xl font-extrabold text-slate-900 mt-1 flex items-center gap-2">
               <span>नमस्ते पापा</span>

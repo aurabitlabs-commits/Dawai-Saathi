@@ -38,6 +38,13 @@ export interface Medicine {
 
 export type DoseStatus = 'taken' | 'pending' | 'missed' | 'snoozed' | 'skipped';
 
+export interface DoseAuditEntry {
+  timestamp: string;
+  action: 'confirmed_taken' | 'undone' | 'snoozed' | 'missed' | 're-confirmed';
+  actor: string;
+  details?: string;
+}
+
 export interface DoseEvent {
   id: string;
   medicineId: string;
@@ -52,6 +59,8 @@ export interface DoseEvent {
   note?: string;
   stripImage?: string;
   pillAppearance?: PillAppearance;
+  snoozedUntil?: number; // Unix timestamp in ms
+  auditHistory?: DoseAuditEntry[];
 }
 
 export interface CaregiverAlert {

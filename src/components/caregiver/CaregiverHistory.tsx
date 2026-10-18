@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { soundService } from '../../utils/audio';
+import { formatScheduleDate, getTodayDateString } from '../../utils/date';
 import { Calendar, CheckCircle2, ChevronLeft, ChevronRight, Download, FileText, Share2 } from 'lucide-react';
 
 export const CaregiverHistory: React.FC = () => {
@@ -8,39 +9,20 @@ export const CaregiverHistory: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const isHindi = language === 'hi';
 
-  const historyDays = [
-    { day: 1, status: 'full' },
-    { day: 2, status: 'full' },
-    { day: 3, status: 'partial' },
-    { day: 4, status: 'full' },
-    { day: 5, status: 'full' },
-    { day: 6, status: 'full' },
-    { day: 7, status: 'full' },
-    { day: 8, status: 'full' },
-    { day: 9, status: 'full' },
-    { day: 10, status: 'full' },
-    { day: 11, status: 'full' },
-    { day: 12, status: 'partial' },
-    { day: 13, status: 'full' },
-    { day: 14, status: 'full' },
-    { day: 15, status: 'full' },
-    { day: 16, status: 'full' },
-    { day: 17, status: 'full' },
-    { day: 18, status: 'current' }, // Today
-    { day: 19, status: 'future' },
-    { day: 20, status: 'future' },
-    { day: 21, status: 'future' },
-    { day: 22, status: 'future' },
-    { day: 23, status: 'future' },
-    { day: 24, status: 'future' },
-    { day: 25, status: 'future' },
-    { day: 26, status: 'future' },
-    { day: 27, status: 'future' },
-    { day: 28, status: 'future' },
-    { day: 29, status: 'future' },
-    { day: 30, status: 'future' },
-    { day: 31, status: 'future' },
-  ];
+  const today = new Date();
+  const todayDayNum = today.getDate();
+  const currentMonthName = today.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+  const historyDays = Array.from({ length: 31 }, (_, i) => {
+    const day = i + 1;
+    let status: 'full' | 'partial' | 'current' | 'future' = 'future';
+    if (day < todayDayNum) {
+      status = day % 4 === 0 ? 'partial' : 'full';
+    } else if (day === todayDayNum) {
+      status = 'current';
+    }
+    return { day, status };
+  });
 
   const handleShareReport = () => {
     soundService.playSuccessChime();
@@ -101,7 +83,7 @@ export const CaregiverHistory: React.FC = () => {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <h3 className="text-sm font-bold text-slate-900">
-              October 2026
+              {currentMonthName}
             </h3>
             <button className="p-1 text-slate-400 hover:text-slate-600">
               <ChevronRight className="w-5 h-5" />
@@ -167,10 +149,10 @@ export const CaregiverHistory: React.FC = () => {
             दैनिक रिकॉर्ड (Daily Log)
           </h3>
 
-          {/* 18 Oct */}
+          {/* Today */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
             <div className="flex items-center justify-between text-xs font-bold text-slate-900 pb-1.5 border-b border-slate-100">
-              <span>18 Oct 2026 (आज)</span>
+              <span>{formatScheduleDate(getTodayDateString(), language)}</span>
               <span className="text-emerald-700">1 ली गई · 1 छूटी</span>
             </div>
 
@@ -190,10 +172,10 @@ export const CaregiverHistory: React.FC = () => {
             </div>
           </div>
 
-          {/* 17 Oct */}
+          {/* Yesterday */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
             <div className="flex items-center justify-between text-xs font-bold text-slate-900 pb-1.5 border-b border-slate-100">
-              <span>17 Oct 2026</span>
+              <span>{formatScheduleDate(getTodayDateString(-1), language)}</span>
               <span className="text-emerald-700">सभी 4 दवाइयाँ ली गईं ✓</span>
             </div>
 
