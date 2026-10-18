@@ -15,7 +15,11 @@ export const INITIAL_ELDER: ElderProfile = {
     name: 'Neha (बेटी)',
     relation: 'Daughter / Primary Caregiver',
     phone: '+91 98765 43210',
+<<<<<<< HEAD
+    avatar: '/images/caregiver_neha_avatar_1792322619528.jpg',
+=======
     avatar: '/src/assets/images/caregiver_neha_avatar_1792322619528.jpg',
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
   },
   pairingCode: '849 201',
 };
@@ -33,7 +37,11 @@ export const INITIAL_MEDICINES: Medicine[] = [
     stockDays: 2,
     totalStock: 2,
     important: true,
+<<<<<<< HEAD
+    stripImage: '/images/medicine_pill_white_round_1792323535639.jpg',
+=======
     stripImage: '/src/assets/images/medicine_pill_white_round_1792323535639.jpg',
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     pillAppearance: {
       shape: 'round',
       primaryColor: '#ffffff',
@@ -57,7 +65,11 @@ export const INITIAL_MEDICINES: Medicine[] = [
     stockDays: 12,
     totalStock: 12,
     important: true,
+<<<<<<< HEAD
+    stripImage: '/images/medicine_strip_sample_1792322618845.jpg',
+=======
     stripImage: '/src/assets/images/medicine_strip_sample_1792322618845.jpg',
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     pillAppearance: {
       shape: 'oval',
       primaryColor: '#f8fafc',
@@ -81,7 +93,11 @@ export const INITIAL_MEDICINES: Medicine[] = [
     stockDays: 25,
     totalStock: 25,
     important: false,
+<<<<<<< HEAD
+    stripImage: '/images/medicine_pill_capsule_gold_1792323535542.jpg',
+=======
     stripImage: '/src/assets/images/medicine_pill_capsule_gold_1792323535542.jpg',
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     pillAppearance: {
       shape: 'capsule',
       primaryColor: '#f59e0b',
@@ -133,7 +149,11 @@ export const INITIAL_DOSES: DoseEvent[] = [
     status: 'taken',
     takenAt: '08:12 AM',
     markedBy: 'Papa',
+<<<<<<< HEAD
+    stripImage: '/images/medicine_pill_white_round_1792323535639.jpg',
+=======
     stripImage: '/src/assets/images/medicine_pill_white_round_1792323535639.jpg',
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     pillAppearance: {
       shape: 'round',
       primaryColor: '#ffffff',
@@ -157,7 +177,11 @@ export const INITIAL_DOSES: DoseEvent[] = [
     time: '09:00 AM',
     date: today,
     status: 'missed',
+<<<<<<< HEAD
+    stripImage: '/images/medicine_strip_sample_1792322618845.jpg',
+=======
     stripImage: '/src/assets/images/medicine_strip_sample_1792322618845.jpg',
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     pillAppearance: {
       shape: 'oval',
       primaryColor: '#f8fafc',
@@ -181,7 +205,11 @@ export const INITIAL_DOSES: DoseEvent[] = [
     time: '01:00 PM',
     date: today,
     status: 'pending',
+<<<<<<< HEAD
+    stripImage: '/images/medicine_pill_capsule_gold_1792323535542.jpg',
+=======
     stripImage: '/src/assets/images/medicine_pill_capsule_gold_1792323535542.jpg',
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     pillAppearance: {
       shape: 'capsule',
       primaryColor: '#f59e0b',
@@ -292,7 +320,11 @@ export const INITIAL_FAMILY: FamilyMember[] = [
     role: 'Primary Caregiver',
     relation: 'Beti (बेटी) · Admin',
     phone: '+91 98765 43210',
+<<<<<<< HEAD
+    avatar: '/images/caregiver_neha_avatar_1792322619528.jpg',
+=======
     avatar: '/src/assets/images/caregiver_neha_avatar_1792322619528.jpg',
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     isAdmin: true,
     canEdit: true,
   },
