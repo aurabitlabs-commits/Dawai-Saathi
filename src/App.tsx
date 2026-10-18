@@ -27,12 +27,12 @@ const MainApp: React.FC = () => {
   const [deviceFrameMode, setDeviceFrameMode] = useState<'mobile' | 'expanded'>('mobile');
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900">
+    <div className="min-h-screen bg-[#081526] flex flex-col font-sans text-slate-900">
       {/* Top Application Bar */}
       <HeaderBar onOpenWelcome={() => setShowWelcome(true)} />
 
       {/* Keep developer/demo controls out of the senior-facing screen. */}
-      {role !== 'elder' && <div className="bg-slate-900 text-white text-xs px-4 py-2 border-b border-slate-800">
+      {role !== 'elder' && <div className="bg-[#0B1D33] text-white text-xs px-4 py-2 border-b border-[#18334F]">
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -70,8 +70,8 @@ const MainApp: React.FC = () => {
         <div
           className={`w-full bg-white shadow-xl flex flex-col transition-all duration-300 relative ${
             deviceFrameMode === 'mobile'
-              ? 'max-w-md sm:rounded-[40px] sm:border-[8px] sm:border-slate-800 min-h-[820px] overflow-hidden'
-              : 'max-w-4xl sm:rounded-3xl border border-slate-200 min-h-[820px]'
+              ? 'max-w-md sm:rounded-[32px] sm:border-[8px] sm:border-[#10253D] min-h-[820px] overflow-hidden'
+              : 'max-w-4xl sm:rounded-3xl border border-[#243A53] min-h-[820px]'
           }`}
         >
           {/* Mobile Screen Notch on frame mode */}
