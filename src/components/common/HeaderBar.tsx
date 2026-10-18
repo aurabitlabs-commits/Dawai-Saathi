@@ -47,8 +47,8 @@ export const HeaderBar: React.FC<{
 
         {/* Action Controls & Mode Switcher */}
         <div className="flex items-center gap-2">
-          {/* Quick Demo Alarm Trigger */}
-          <button
+          {/* Keep demo-only alarm controls off the elder home screen; available in More options. */}
+          {role !== 'elder' && <button
             onClick={() => triggerSimulatedReminder()}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-xs active:scale-95 transition-all"
             title="दादू के फोन पर अलार्म बजाकर देखें"
@@ -56,7 +56,7 @@ export const HeaderBar: React.FC<{
             <Bell className="w-3.5 h-3.5 text-slate-950 animate-bounce" />
             <span className="hidden sm:inline">अलार्म चलाएं</span>
             <span className="sm:hidden">अलार्म</span>
-          </button>
+          </button>}
 
           {/* Role Switcher Pill */}
           <div className="flex items-center p-0.5 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold">
