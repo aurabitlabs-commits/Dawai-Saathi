@@ -58,8 +58,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
   ];
 
   return (
+<<<<<<< HEAD
+    <nav aria-label="Main" className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200">
+      <div className="max-w-md mx-auto grid grid-cols-6 items-center h-[72px] px-1">
+=======
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200">
       <div className="max-w-md mx-auto grid grid-cols-6 items-center h-16 px-1">
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
         {tabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -68,6 +73,17 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
+<<<<<<< HEAD
+              aria-current={isActive ? 'page' : undefined}
+              className={`flex flex-col items-center justify-center h-full py-1 relative transition-colors ${
+                isActive ? 'text-blue-800 font-bold' : 'text-slate-700 hover:text-slate-900'
+              }`}
+            >
+              <div className="relative">
+                <Icon className={`w-6 h-6 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} aria-hidden="true" />
+                {tab.badge && (
+                  <span className="absolute -top-1.5 -right-2 min-w-[20px] h-5 px-1 rounded-full bg-red-700 text-white text-xs font-bold flex items-center justify-center">
+=======
               className={`flex flex-col items-center justify-center h-full py-1 relative transition-colors ${
                 isActive ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800'
               }`}
@@ -76,11 +92,16 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
                 <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
                 {tab.badge && (
                   <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center">
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
                     {tab.badge}
                   </span>
                 )}
               </div>
+<<<<<<< HEAD
+              <span className="text-xs mt-1 truncate max-w-full">
+=======
               <span className="text-[10px] mt-1 tracking-tight truncate max-w-full">
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
                 {tab.label}
               </span>
             </button>
