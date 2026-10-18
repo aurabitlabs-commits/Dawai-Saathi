@@ -31,8 +31,8 @@ const MainApp: React.FC = () => {
       {/* Top Application Bar */}
       <HeaderBar onOpenWelcome={() => setShowWelcome(true)} />
 
-      {/* Synchronized Live Demo Notice / Device Switcher — clearly labels application as a local demo */}
-      <div className="bg-slate-900 text-white text-xs px-4 py-2 border-b border-slate-800">
+      {/* Keep developer/demo controls out of the senior-facing screen. */}
+      {role !== 'elder' && <div className="bg-slate-900 text-white text-xs px-4 py-2 border-b border-slate-800">
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -63,7 +63,7 @@ const MainApp: React.FC = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Main Container: Mobile Frame or Full Width */}
       <main className="flex-1 flex justify-center p-0 sm:py-6 sm:px-4">
