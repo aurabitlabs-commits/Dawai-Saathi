@@ -104,7 +104,7 @@ export const ElderHome: React.FC = () => {
             <button
               onClick={handleSpeakOverview}
               className="flex min-h-[56px] min-w-[56px] items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-3 text-slate-900 hover:bg-slate-100"
-              aria-label={isHindi ? 'आज की दवाइयाँ सुनें' : 'Listen to today's medicine summary'}
+              aria-label={isHindi ? "आज की दवाइयाँ सुनें" : "Listen to today's medicine summary"}
               title={isHindi ? 'सुनें' : 'Listen'}
             >
               <Volume2 className="h-6 w-6" aria-hidden="true" />
