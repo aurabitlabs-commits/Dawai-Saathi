@@ -70,7 +70,11 @@ export const WelcomeModal: React.FC<{
             {/* Warm Multigenerational Indian Family Hero Illustration */}
             <div className="my-3 w-full rounded-2xl overflow-hidden border border-slate-200 shadow-xs">
               <img
+<<<<<<< HEAD
+                src="/images/dawai_saathi_family_hero_1792322618126.jpg"
+=======
                 src="/src/assets/images/dawai_saathi_family_hero_1792322618126.jpg"
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
                 alt="Dawai Saathi Family"
                 className="w-full h-52 object-cover"
               />
