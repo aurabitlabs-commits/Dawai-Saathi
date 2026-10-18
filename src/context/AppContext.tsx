@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+import { buildDoseSpeech } from '../utils/doseText';
+=======
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
   CaregiverAlert,
@@ -174,6 +178,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('ds_alerts', JSON.stringify(alerts));
   }, [alerts]);
 
+<<<<<<< HEAD
+  // Make sure every new day has its dose records (doses are persisted per date;
+  // without this, tomorrow would show an empty schedule / "all done").
+  useEffect(() => {
+    const ensureToday = () => {
+      const today = getTodayDateString();
+      setDoses(prev => {
+        if (prev.some(d => d.date === today)) return prev;
+        const generated: DoseEvent[] = medicines.map(med => ({
+          id: `dose-${today}-${med.id}`,
+          medicineId: med.id,
+          medicineName: med.name,
+          medicineHindiName: med.hindiName,
+          dosage: med.dosage,
+          time: med.time,
+          date: today,
+          status: 'pending',
+          stripImage: med.stripImage,
+          pillAppearance: med.pillAppearance,
+        }));
+        return generated.length ? [...prev, ...generated] : prev;
+      });
+    };
+    ensureToday();
+    const t = setInterval(ensureToday, 60 * 1000); // also covers midnight rollover
+    return () => clearInterval(t);
+  }, [medicines]);
+
+=======
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
   // Periodic snoozed reminder worker check
   useEffect(() => {
     const timer = setInterval(() => {
@@ -461,10 +495,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (target) {
       setActiveReminder(target);
       soundService.playBellChime();
+<<<<<<< HEAD
+      const speech = buildDoseSpeech(target, medicines.find(m => m.id === target.medicineId)?.mealRelation);
+      speakPrompt(speech.hi, speech.en);
+=======
       speakPrompt(
         `नमस्ते पापा, आपकी ${target.medicineHindiName} लेने का समय हो गया है। एक गोली खाने के बाद।`,
         `Namaste Papa, it is time for your ${target.medicineName}. 1 tablet after food.`
       );
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     }
   };
 
