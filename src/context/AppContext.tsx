@@ -237,14 +237,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [doses]);
 
   // Derive schedule dynamically for any date
+  // Historical dates must reflect saved events only. Reconstructing an old day
+  // from today's prescription would fabricate medical history.
   const getDosesForDate = (dateStr: string): DoseEvent[] => {
     const existing = doses.filter(d => d.date === dateStr);
-    if (existing.length > 0) {
-      return existing;
-    }
+    if (existing.length > 0) return existing;
 
-    // Generate schedule from active medicines if no records exist yet for this date
-    const generated: DoseEvent[] = medicines.map((med, index) => ({
+    // Today is persisted by ensureToday. Do not invent past events; only preview
+    // a future schedule when no saved dose events exist for that date.
+    if (dateStr <= getTodayDateString()) return [];
+
+    return medicines.map(med => ({
       id: `dose-${dateStr}-${med.id}`,
       medicineId: med.id,
       medicineName: med.name,
@@ -256,8 +259,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       stripImage: med.stripImage,
       pillAppearance: med.pillAppearance,
     }));
-
-    return generated;
   };
 
   const speakPrompt = (textHi: string, textEn: string) => {
@@ -556,8 +557,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const updatedMeds = medicines.map(m => (m.id === updatedMed.id ? updatedMed : m));
     setMedicines(updatedMeds);
 
+    // Preserve completed dose snapshots. Prescription edits should not rewrite
+    // a dose already recorded as taken or any event from a past date.
+    const today = getTodayDateString();
     const updatedDoses = doses.map(d =>
-      d.medicineId === updatedMed.id
+      d.medicineId === updatedMed.id && d.status !== 'taken' && d.date >= today
         ? {
             ...d,
             medicineName: updatedMed.name,
