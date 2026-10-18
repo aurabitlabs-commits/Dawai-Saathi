@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { soundService } from '../../utils/audio';
+import { PillVisual } from '../common/PillVisual';
 import { CheckCircle2, Clock, Phone, Volume2, X } from 'lucide-react';
 
 export const ElderReminderModal: React.FC = () => {
@@ -20,9 +21,12 @@ export const ElderReminderModal: React.FC = () => {
 
   const handleRepeatVoice = () => {
     soundService.playBellChime();
+    const visualDesc = activeReminder.pillAppearance
+      ? `${activeReminder.pillAppearance.colorLabelHi} रंग की ${activeReminder.pillAppearance.shapeLabelHi}`
+      : 'दवाई';
     speakPrompt(
-      `नमस्ते पापा। सुबह की दवाई का समय हो गया है। ${activeReminder.medicineHindiName}, एक गोली खाने के बाद पानी के साथ लीजिए।`,
-      `Namaste Papa. Time for your morning medicine. ${activeReminder.medicineName}, 1 tablet after food with water.`
+      `नमस्ते पापा। सुबह की दवाई का समय हो गया है। ${activeReminder.medicineHindiName}, ${visualDesc}, एक गोली खाने के बाद पानी के साथ लीजिए।`,
+      `Namaste Papa. Time for your morning medicine. ${activeReminder.medicineName}, ${activeReminder.pillAppearance?.colorLabelEn || ''} ${activeReminder.pillAppearance?.shapeLabelEn || 'pill'}, 1 tablet after food with water.`
     );
   };
 
@@ -67,16 +71,25 @@ export const ElderReminderModal: React.FC = () => {
           </div>
 
           <div className="mt-5 w-full bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center gap-4 text-left">
-            <div className="w-16 h-16 rounded-xl bg-amber-100 flex items-center justify-center text-3xl shrink-0">
-              💊
-            </div>
-            <div>
+            <PillVisual
+              stripImage={activeReminder.stripImage}
+              pillAppearance={activeReminder.pillAppearance}
+              size="lg"
+              language={language}
+            />
+            <div className="flex-1">
               <h3 className="text-2xl font-black text-slate-900 leading-tight">
                 {isHindi ? activeReminder.medicineHindiName : activeReminder.medicineName}
               </h3>
               <p className="text-base font-bold text-slate-600 mt-1">
                 {activeReminder.dosage} · {isHindi ? 'खाने के बाद' : 'After Food'}
               </p>
+              {activeReminder.pillAppearance && (
+                <div className="mt-1.5 inline-block text-xs font-bold text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-200">
+                  पहचान: {isHindi ? `${activeReminder.pillAppearance.colorLabelHi} ${activeReminder.pillAppearance.shapeLabelHi}` : `${activeReminder.pillAppearance.colorLabelEn} ${activeReminder.pillAppearance.shapeLabelEn}`}
+                  {activeReminder.pillAppearance.imprintText && ` (${activeReminder.pillAppearance.imprintText})`}
+                </div>
+              )}
             </div>
           </div>
         </div>

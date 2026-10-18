@@ -6,6 +6,19 @@ export type MealRelation = 'after' | 'before' | 'with' | 'empty_stomach';
 
 export type MedicineForm = 'tablet' | 'syrup' | 'injection' | 'drops' | 'capsule';
 
+export type PillShape = 'round' | 'oval' | 'capsule' | 'liquid' | 'strip';
+
+export interface PillAppearance {
+  shape: PillShape;
+  primaryColor: string; // e.g. '#ffffff', '#fbbf24', '#f87171', '#34d399', '#f97316'
+  secondaryColor?: string; // for two-tone capsules
+  colorLabelHi: string; // e.g. "सफेद"
+  colorLabelEn: string; // e.g. "White"
+  shapeLabelHi: string; // e.g. "गोल गोली"
+  shapeLabelEn: string; // e.g. "Round Tablet"
+  imprintText?: string; // e.g. "5", "500", "score"
+}
+
 export interface Medicine {
   id: string;
   name: string;
@@ -19,6 +32,7 @@ export interface Medicine {
   totalStock: number;
   important: boolean;
   stripImage?: string;
+  pillAppearance?: PillAppearance;
   notes?: string;
 }
 
@@ -36,6 +50,8 @@ export interface DoseEvent {
   takenAt?: string;
   markedBy?: string; // e.g. "Papa", "Neha (Beti)"
   note?: string;
+  stripImage?: string;
+  pillAppearance?: PillAppearance;
 }
 
 export interface CaregiverAlert {

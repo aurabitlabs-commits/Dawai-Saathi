@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Check, CheckCircle2, Clock, Plus, Trash2 } from 'lucide-react';
+import { PillVisual } from '../common/PillVisual';
+import { Check, CheckCircle2, Clock, Edit3, Plus, Trash2 } from 'lucide-react';
 
 export const CaregiverSchedule: React.FC = () => {
-  const { medicines, doses, setShowAddMedicine, markTakenByCaregiver, language } = useApp();
+  const {
+    medicines,
+    doses,
+    setShowAddMedicine,
+    setEditingMedicine,
+    markTakenByCaregiver,
+    language,
+  } = useApp();
   const isHindi = language === 'hi';
 
   const [activeDateIndex, setActiveDateIndex] = useState(1); // Monday 20th Oct or Sunday 19th
@@ -33,7 +41,10 @@ export const CaregiverSchedule: React.FC = () => {
           </div>
 
           <button
-            onClick={() => setShowAddMedicine(true)}
+            onClick={() => {
+              setEditingMedicine(null);
+              setShowAddMedicine(true);
+            }}
             className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
@@ -70,21 +81,22 @@ export const CaregiverSchedule: React.FC = () => {
           <span>समय अनुसार क्रमित</span>
         </div>
 
-        {medicines.map((med, idx) => {
+        {medicines.map(med => {
           const dose = doses.find(d => d.medicineId === med.id);
           const isTaken = dose?.status === 'taken';
 
           return (
             <div
               key={med.id}
-              className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between"
+              className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-3"
             >
-              <div className="flex items-center gap-3.5">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 ${
-                  isTaken ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                }`}>
-                  {med.form === 'capsule' ? '💊' : '⚪'}
-                </div>
+              <div className="flex items-center gap-3">
+                <PillVisual
+                  stripImage={med.stripImage}
+                  pillAppearance={med.pillAppearance}
+                  size="md"
+                  language={language}
+                />
 
                 <div>
                   <div className="flex items-center gap-2">
@@ -103,11 +115,28 @@ export const CaregiverSchedule: React.FC = () => {
                   <p className="text-xs font-semibold text-slate-500">
                     {med.dosage} · {med.notes || 'खाने के बाद'}
                   </p>
+                  {med.pillAppearance && (
+                    <p className="text-[10px] font-bold text-slate-600 mt-0.5">
+                      पहचान: {isHindi ? `${med.pillAppearance.colorLabelHi} ${med.pillAppearance.shapeLabelHi}` : `${med.pillAppearance.colorLabelEn} ${med.pillAppearance.shapeLabelEn}`}
+                      {med.pillAppearance.imprintText && ` (${med.pillAppearance.imprintText})`}
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* Status or Mark Taken action */}
-              <div>
+              {/* Action buttons: Edit pill/medicine + Mark status */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setEditingMedicine(med);
+                    setShowAddMedicine(true);
+                  }}
+                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+                  title="दवा व फ़ोटो एडिट करें"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </button>
+
                 {isTaken ? (
                   <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
                     <Check className="w-5 h-5 stroke-[2.5]" />

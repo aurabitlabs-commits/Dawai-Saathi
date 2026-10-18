@@ -41,6 +41,8 @@ interface AppContextType {
   setShowConfirmation: (conf: { isOpen: boolean; dose?: DoseEvent }) => void;
   showAddMedicine: boolean;
   setShowAddMedicine: (show: boolean) => void;
+  editingMedicine: Medicine | null;
+  setEditingMedicine: (med: Medicine | null) => void;
   showPairingModal: boolean;
   setShowPairingModal: (show: boolean) => void;
   showWhoCanSeeModal: boolean;
@@ -57,6 +59,7 @@ interface AppContextType {
   claimAlert: (alertId: string, caregiverName: string) => void;
   markTakenByCaregiver: (doseId: string, alertId?: string) => void;
   addNewMedicine: (med: Omit<Medicine, 'id'>) => void;
+  updateExistingMedicine: (med: Medicine) => void;
   updateStock: (medId: string, addedDays: number) => void;
   toggleSharing: (paused: boolean) => void;
   undoTaken: (doseId: string) => void;
@@ -95,6 +98,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     isOpen: false,
   });
   const [showAddMedicine, setShowAddMedicine] = useState(false);
+  const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
   const [showPairingModal, setShowPairingModal] = useState(false);
   const [showWhoCanSeeModal, setShowWhoCanSeeModal] = useState(false);
   const [showRefillWhatsAppModal, setShowRefillWhatsAppModal] = useState(false);
@@ -291,6 +295,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     speakPrompt('नई दवाई सफलतापूर्वक जोड़ दी गई है।', 'New medicine added successfully.');
   };
 
+  const updateExistingMedicine = (updatedMed: Medicine) => {
+    setMedicines(prev => prev.map(m => (m.id === updatedMed.id ? updatedMed : m)));
+
+    // Update corresponding dose event for today
+    setDoses(prev =>
+      prev.map(d =>
+        d.medicineId === updatedMed.id
+          ? {
+              ...d,
+              medicineName: updatedMed.name,
+              medicineHindiName: updatedMed.hindiName,
+              dosage: updatedMed.dosage,
+              time: updatedMed.time,
+              stripImage: updatedMed.stripImage,
+              pillAppearance: updatedMed.pillAppearance,
+            }
+          : d
+      )
+    );
+
+    setEditingMedicine(null);
+    setShowAddMedicine(false);
+    soundService.playSuccessChime();
+    speakPrompt('दवाई का विवरण व फ़ोटो अपडेट कर दी गई है।', 'Medicine details and visual updated.');
+  };
+
   const updateStock = (medId: string, addedDays: number) => {
     setMedicines(prev =>
       prev.map(m =>
@@ -345,6 +375,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setShowConfirmation,
         showAddMedicine,
         setShowAddMedicine,
+        editingMedicine,
+        setEditingMedicine,
         showPairingModal,
         setShowPairingModal,
         showWhoCanSeeModal,
@@ -359,6 +391,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         claimAlert,
         markTakenByCaregiver,
         addNewMedicine,
+        updateExistingMedicine,
         updateStock,
         toggleSharing,
         undoTaken,

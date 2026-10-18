@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { soundService } from '../../utils/audio';
+import { PillVisual } from '../common/PillVisual';
 import {
   Bell,
   CheckCircle2,
@@ -117,16 +118,25 @@ export const ElderHome: React.FC = () => {
             </div>
 
             <div className="my-5 flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-sm border border-slate-200 shrink-0">
-                <span className="text-3xl">💊</span>
-              </div>
+              <PillVisual
+                stripImage={nextDose.stripImage}
+                pillAppearance={nextDose.pillAppearance}
+                size="lg"
+                language={language}
+              />
               <div className="flex-1">
                 <h2 className="text-2xl font-black text-slate-900 leading-tight">
                   {isHindi ? nextDose.medicineHindiName : nextDose.medicineName}
                 </h2>
-                <p className="text-base font-semibold text-slate-700 mt-1">
+                <p className="text-base font-semibold text-slate-700 mt-0.5">
                   {nextDose.dosage} · {isHindi ? 'खाने के बाद' : 'After Food'}
                 </p>
+                {nextDose.pillAppearance && (
+                  <span className="inline-block mt-1 text-xs font-bold text-slate-700 bg-white/90 px-2.5 py-0.5 rounded-full border border-slate-200">
+                    दवा का रूप: {isHindi ? `${nextDose.pillAppearance.colorLabelHi} ${nextDose.pillAppearance.shapeLabelHi}` : `${nextDose.pillAppearance.colorLabelEn} ${nextDose.pillAppearance.shapeLabelEn}`}
+                    {nextDose.pillAppearance.imprintText && ` (${nextDose.pillAppearance.imprintText})`}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -199,14 +209,14 @@ export const ElderHome: React.FC = () => {
                       : 'bg-white border-slate-200 shadow-xs'
                   }`}
                 >
-                  <div className="flex items-center gap-3.5">
+                  <div className="flex items-center gap-3">
                     <button
                       onClick={() => {
                         if (!isTaken) {
                           markDoseTaken(dose.id, 'Papa');
                         }
                       }}
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all shrink-0 ${
                         isTaken
                           ? 'bg-emerald-600 text-white shadow-sm'
                           : isMissed
@@ -217,6 +227,13 @@ export const ElderHome: React.FC = () => {
                     >
                       {isTaken ? <CheckCircle2 className="w-7 h-7" /> : <span className="text-xl font-bold">○</span>}
                     </button>
+
+                    <PillVisual
+                      stripImage={dose.stripImage}
+                      pillAppearance={dose.pillAppearance}
+                      size="sm"
+                      language={language}
+                    />
 
                     <div>
                       <h4 className="text-lg font-bold text-slate-900 leading-snug">

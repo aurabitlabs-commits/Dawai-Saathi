@@ -1,5 +1,5 @@
-import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { PillVisual } from '../common/PillVisual';
 import { Check, ChevronRight } from 'lucide-react';
 
 export const ElderConfirmationModal: React.FC = () => {
@@ -20,7 +20,7 @@ export const ElderConfirmationModal: React.FC = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="w-full max-w-md bg-white rounded-3xl p-7 text-center shadow-2xl border border-slate-100 flex flex-col items-center">
         {/* Big Animated Green Checkmark matching Storyboard */}
-        <div className="w-24 h-24 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-6 shadow-inner animate-in zoom-in duration-300">
+        <div className="w-24 h-24 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 shadow-inner animate-in zoom-in duration-300">
           <Check className="w-14 h-14 stroke-[3.5]" />
         </div>
 
@@ -28,19 +28,28 @@ export const ElderConfirmationModal: React.FC = () => {
           {isHindi ? 'शाबाश!' : 'Well Done!'}
         </h2>
 
-        <p className="text-2xl font-bold text-slate-800 mt-2 leading-relaxed">
+        <p className="text-xl font-bold text-slate-800 mt-1 leading-relaxed">
           {isHindi ? 'आपने दवाई ले ली है।' : 'You have taken your medicine.'}
         </p>
 
         {showConfirmation.dose && (
-          <p className="text-lg font-bold text-emerald-800 mt-1">
-            {isHindi ? showConfirmation.dose.medicineHindiName : showConfirmation.dose.medicineName}
-          </p>
+          <div className="my-3 p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3 w-full text-left">
+            <PillVisual
+              stripImage={showConfirmation.dose.stripImage}
+              pillAppearance={showConfirmation.dose.pillAppearance}
+              size="sm"
+              language={language}
+            />
+            <div>
+              <p className="text-base font-extrabold text-slate-900 leading-tight">
+                {isHindi ? showConfirmation.dose.medicineHindiName : showConfirmation.dose.medicineName}
+              </p>
+              <p className="text-xs font-semibold text-slate-600">
+                {showConfirmation.dose.dosage} · {dateString}, {timeString}
+              </p>
+            </div>
+          </div>
         )}
-
-        <div className="mt-4 px-4 py-2 bg-slate-100 text-slate-700 text-sm font-semibold rounded-full">
-          {dateString}, {timeString}
-        </div>
 
         <div className="w-full space-y-3 mt-8">
           {/* Big OK button */}

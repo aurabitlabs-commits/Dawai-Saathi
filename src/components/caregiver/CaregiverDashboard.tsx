@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { soundService } from '../../utils/audio';
+import { PillVisual } from '../common/PillVisual';
 import {
   AlertTriangle,
   BatteryCharging,
@@ -144,9 +145,20 @@ export const CaregiverDashboard: React.FC<{
         {missedAlert && (
           <div className="bg-red-50/90 border-2 border-red-300 rounded-2xl p-4 shadow-sm space-y-3">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-6 h-6 animate-pulse" />
-              </div>
+              <PillVisual
+                stripImage="/src/assets/images/medicine_strip_sample_1792322618845.jpg"
+                pillAppearance={{
+                  shape: 'oval',
+                  primaryColor: '#ffffff',
+                  colorLabelHi: 'सफेद',
+                  colorLabelEn: 'White',
+                  shapeLabelHi: 'लंबी अंडाकार गोली',
+                  shapeLabelEn: 'Oblong Tablet',
+                  imprintText: '500',
+                }}
+                size="md"
+                language={language}
+              />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-red-950">
@@ -160,7 +172,7 @@ export const CaregiverDashboard: React.FC<{
                   {missedAlert.message}
                 </p>
                 <p className="text-xs text-red-700 mt-1">
-                  दवाई: <span className="font-semibold">{missedAlert.medicineName}</span> · समय: 09:00 AM
+                  दवाई: <span className="font-semibold">{missedAlert.medicineName}</span> · पहचान: <span className="font-bold">सफेद लंबी गोली (500)</span>
                 </p>
               </div>
             </div>
@@ -208,9 +220,20 @@ export const CaregiverDashboard: React.FC<{
         {lowStockAlert && (
           <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                <Pill className="w-5 h-5" />
-              </div>
+              <PillVisual
+                stripImage="/src/assets/images/medicine_pill_white_round_1792323535639.jpg"
+                pillAppearance={{
+                  shape: 'round',
+                  primaryColor: '#ffffff',
+                  colorLabelHi: 'सफेद',
+                  colorLabelEn: 'White',
+                  shapeLabelHi: 'गोल गोली',
+                  shapeLabelEn: 'Round Tablet',
+                  imprintText: '5',
+                }}
+                size="sm"
+                language={language}
+              />
               <div>
                 <h4 className="text-xs font-bold text-amber-950 uppercase tracking-wide">
                   {lowStockAlert.titleHi}
@@ -262,15 +285,12 @@ export const CaregiverDashboard: React.FC<{
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm ${
-                        isTaken
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : isMissed
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}>
-                        {isTaken ? <CheckCircle2 className="w-5 h-5 text-emerald-700" /> : <Clock className="w-5 h-5" />}
-                      </div>
+                      <PillVisual
+                        stripImage={dose.stripImage}
+                        pillAppearance={dose.pillAppearance}
+                        size="sm"
+                        language={language}
+                      />
 
                       <div>
                         <h4 className="text-base font-bold text-slate-900 leading-snug">
@@ -279,6 +299,11 @@ export const CaregiverDashboard: React.FC<{
                         <p className="text-xs font-semibold text-slate-500">
                           {dose.time} · {dose.dosage}
                         </p>
+                        {dose.pillAppearance && (
+                          <p className="text-[10px] font-bold text-slate-600">
+                            {isHindi ? `${dose.pillAppearance.colorLabelHi} ${dose.pillAppearance.shapeLabelHi}` : `${dose.pillAppearance.colorLabelEn} ${dose.pillAppearance.shapeLabelEn}`}
+                          </p>
+                        )}
                       </div>
                     </div>
 
