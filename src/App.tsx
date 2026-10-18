@@ -14,6 +14,7 @@ import { CaregiverAlerts } from './components/caregiver/CaregiverAlerts';
 import { CaregiverStock } from './components/caregiver/CaregiverStock';
 import { CaregiverHistory } from './components/caregiver/CaregiverHistory';
 import { CaregiverFamily } from './components/caregiver/CaregiverFamily';
+import { CaregiverMore } from './components/caregiver/CaregiverMore';
 import { AddMedicineModal } from './components/caregiver/AddMedicineModal';
 import { WelcomeModal } from './components/onboarding/WelcomeModal';
 import { DuplicateDoseModal } from './components/elder/DuplicateDoseModal';
@@ -93,8 +94,9 @@ const MainApp: React.FC = () => {
                 {caregiverTab === 'schedule' && <CaregiverSchedule />}
                 {caregiverTab === 'alerts' && <CaregiverAlerts onTabChange={setCaregiverTab} />}
                 {caregiverTab === 'stock' && <CaregiverStock />}
-                {caregiverTab === 'history' && <CaregiverHistory />}
-                {caregiverTab === 'family' && <CaregiverFamily />}
+                {caregiverTab === 'more' && <CaregiverMore onTabChange={setCaregiverTab} />}
+                {caregiverTab === 'history' && <CaregiverHistory onTabChange={setCaregiverTab} />}
+                {caregiverTab === 'family' && <CaregiverFamily onTabChange={setCaregiverTab} />}
               </>
             )}
           </div>

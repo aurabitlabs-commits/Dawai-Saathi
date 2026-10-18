@@ -13,7 +13,11 @@ import {
   X,
 } from 'lucide-react';
 
-export const CaregiverFamily: React.FC = () => {
+interface CaregiverFamilyProps {
+  onTabChange?: (tab: string) => void;
+}
+
+export const CaregiverFamily: React.FC<CaregiverFamilyProps> = ({ onTabChange }) => {
   const { familyMembers, elder, language } = useApp();
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showPairingModal, setShowPairingModal] = useState(false);
@@ -35,6 +39,15 @@ export const CaregiverFamily: React.FC = () => {
     <div className="flex flex-col min-h-full pb-20">
       {/* Top Header */}
       <div className="bg-white px-5 pt-4 pb-4 border-b border-slate-200">
+        {onTabChange && (
+          <button
+            onClick={() => onTabChange('more')}
+            className="mb-2 text-xs font-bold text-blue-700 hover:text-blue-900 flex items-center gap-1 transition-colors"
+          >
+            <ChevronRight className="w-4 h-4 rotate-180" />
+            <span>{isHindi ? 'अधिक विकल्पों पर वापस जाएं' : 'Back to More Options'}</span>
+          </button>
+        )}
         <h1 className="text-xl font-bold text-slate-900">
           {isHindi ? 'परिवार के सदस्य' : 'Family Members'}
         </h1>

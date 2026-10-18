@@ -4,7 +4,11 @@ import { soundService } from '../../utils/audio';
 import { formatScheduleDate, getTodayDateString } from '../../utils/date';
 import { Calendar, CheckCircle2, ChevronLeft, ChevronRight, Download, FileText, Share2 } from 'lucide-react';
 
-export const CaregiverHistory: React.FC = () => {
+interface CaregiverHistoryProps {
+  onTabChange?: (tab: string) => void;
+}
+
+export const CaregiverHistory: React.FC<CaregiverHistoryProps> = ({ onTabChange }) => {
   const { language } = useApp();
   const [copied, setCopied] = useState(false);
   const isHindi = language === 'hi';
@@ -36,6 +40,15 @@ export const CaregiverHistory: React.FC = () => {
     <div className="flex flex-col min-h-full pb-20">
       {/* Top Header */}
       <div className="bg-white px-5 pt-4 pb-4 border-b border-slate-200">
+        {onTabChange && (
+          <button
+            onClick={() => onTabChange('more')}
+            className="mb-2 text-xs font-bold text-blue-700 hover:text-blue-900 flex items-center gap-1 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>{isHindi ? 'अधिक विकल्पों पर वापस जाएं' : 'Back to More Options'}</span>
+          </button>
+        )}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-slate-900">
