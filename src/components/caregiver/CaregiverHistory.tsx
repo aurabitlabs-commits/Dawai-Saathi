@@ -1,200 +1,243 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { soundService } from '../../utils/audio';
 import { formatScheduleDate, getTodayDateString } from '../../utils/date';
-import { Calendar, CheckCircle2, ChevronLeft, ChevronRight, Download, FileText, Share2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
+import type { DoseEvent } from '../../types';
 
-export const CaregiverHistory: React.FC = () => {
-  const { language } = useApp();
-  const [copied, setCopied] = useState(false);
-  const isHindi = language === 'hi';
+type DayStatus = 'complete' | 'partial' | 'missed' | 'pending' | 'empty';
 
-  const today = new Date();
-  const todayDayNum = today.getDate();
-  const currentMonthName = today.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-
-  const historyDays = Array.from({ length: 31 }, (_, i) => {
-    const day = i + 1;
-    let status: 'full' | 'partial' | 'current' | 'future' = 'future';
-    if (day < todayDayNum) {
-      status = day % 4 === 0 ? 'partial' : 'full';
-    } else if (day === todayDayNum) {
-      status = 'current';
-    }
-    return { day, status };
+const monthLabel = (date: Date, language: 'hi' | 'en') =>
+  date.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', {
+    month: 'long',
+    year: 'numeric',
   });
 
-  const handleShareReport = () => {
-    soundService.playSuccessChime();
-    const text = `*दवाई साथी - मासिक अनुपालन रिपोर्ट (Dawai Saathi Report)*\nमरीज: रामकांत शर्मा (उम्र 68)\nअवधि: 1 - 18 अक्टूबर 2026\nसमय पर ली गईं: 94% (Adherence)\nछूटी हुई दवाइयाँ: 2 (तुरंत परिवार द्वारा कवर की गईं)\nडॉक्टर: डॉ. राजीव वर्मा\nडाउनलोड लिंक: https://dawaisaathi.in/report/849201`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2200);
+const localDateKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const getDayStatus = (events: DoseEvent[]): DayStatus => {
+  if (!events.length) return 'empty';
+  const taken = events.filter(event => event.status === 'taken').length;
+  const decided = events.filter(event =>
+    event.status === 'taken' || event.status === 'missed' || event.status === 'skipped'
+  ).length;
+  if (taken === events.length) return 'complete';
+  if (decided === events.length && taken === 0) return 'missed';
+  if (taken > 0) return 'partial';
+  return 'pending';
+};
+
+export const CaregiverHistory: React.FC = () => {
+  const { language, elder, doses } = useApp();
+  const [month, setMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+  const isHindi = language === 'hi';
+  const todayKey = getTodayDateString();
+
+  const monthDays = useMemo(() => {
+    const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
+    const numberOfDays = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+    const leadingBlanks = firstDay.getDay();
+    return [
+      ...Array.from({ length: leadingBlanks }, (_, index) => ({ key: `blank-${index}`, day: null as number | null })),
+      ...Array.from({ length: numberOfDays }, (_, index) => ({ key: `day-${index + 1}`, day: index + 1 })),
+    ];
+  }, [month]);
+
+  const monthEvents = useMemo(
+    () => doses.filter(dose => dose.date.startsWith(`${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}-`)),
+    [doses, month],
+  );
+
+  const stats = useMemo(() => {
+    const taken = monthEvents.filter(dose => dose.status === 'taken').length;
+    const missed = monthEvents.filter(dose => dose.status === 'missed').length;
+    const skipped = monthEvents.filter(dose => dose.status === 'skipped').length;
+    const decided = taken + missed + skipped;
+    return { taken, missed, skipped, decided, adherence: decided ? Math.round((taken / decided) * 100) : null };
+  }, [monthEvents]);
+
+  const eventsByDate = useMemo(() => {
+    const grouped = new Map<string, DoseEvent[]>();
+    for (const event of monthEvents) {
+      const current = grouped.get(event.date) || [];
+      current.push(event);
+      grouped.set(event.date, current);
+    }
+    return grouped;
+  }, [monthEvents]);
+
+  const selectedDayEvents = useMemo(() => {
+    const todayEvents = doses.filter(dose => dose.date === todayKey);
+    return todayEvents.sort((a, b) => a.time.localeCompare(b.time));
+  }, [doses, todayKey]);
+
+  const handleShareReport = async () => {
+    const reportLines = [
+      isHindi ? 'दवाई साथी — दवा इतिहास रिपोर्ट' : 'Dawai Saathi — Medication History Report',
+      `${isHindi ? 'मरीज़' : 'Patient'}: ${elder.name}`,
+      `${isHindi ? 'अवधि' : 'Period'}: ${monthLabel(month, language)}`,
+      `${isHindi ? 'ली गई खुराकें' : 'Taken doses'}: ${stats.taken}`,
+      `${isHindi ? 'छूटी खुराकें' : 'Missed doses'}: ${stats.missed}`,
+      `${isHindi ? 'स्किप की गई खुराकें' : 'Skipped doses'}: ${stats.skipped}`,
+      `${isHindi ? 'अनुपालन' : 'Adherence'}: ${stats.adherence === null ? (isHindi ? 'पर्याप्त डेटा नहीं' : 'Insufficient data') : `${stats.adherence}%`}`,
+      '',
+      isHindi ? 'यह रिपोर्ट ऐप में दर्ज खुराकों पर आधारित है। यह डॉक्टर की सलाह का विकल्प नहीं है।' : 'This report reflects dose events recorded in the app and is not a substitute for medical advice.',
+    ];
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard is unavailable');
+      await navigator.clipboard.writeText(reportLines.join('\n'));
+      soundService.playSuccessChime();
+      setCopied(true);
+      setCopyError(false);
+      window.setTimeout(() => setCopied(false), 2200);
+    } catch {
+      setCopied(false);
+      setCopyError(true);
+    }
   };
 
+  const dayNames = isHindi ? ['रवि', 'सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   return (
-    <div className="flex flex-col min-h-full pb-20">
-      {/* Top Header */}
-      <div className="bg-white px-5 pt-4 pb-4 border-b border-slate-200">
-        <div className="flex items-center justify-between">
+    <div className="flex min-h-full flex-col pb-20">
+      <div className="border-b border-slate-200 bg-white px-5 py-4">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold text-slate-900">
               {isHindi ? 'दवाइयों का इतिहास व रिपोर्ट' : 'Medicine History & Reports'}
             </h1>
-            <p className="text-xs text-slate-500 font-medium">
-              पिछले 7 व 30 दिनों का अनुपालन रिकॉर्ड
+            <p className="mt-1 text-xs font-medium text-slate-500">
+              {isHindi ? 'केवल ऐप में दर्ज खुराकों का रिकॉर्ड' : 'Based only on dose records saved in this app'}
             </p>
           </div>
-
           <button
+            type="button"
             onClick={handleShareReport}
-            className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+            className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition-colors hover:bg-blue-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
           >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>{copied ? 'कॉपी हो गया!' : 'डॉक्टर से शेयर'}</span>
+            <Share2 className="h-4 w-4" aria-hidden="true" />
+            <span>{copied ? (isHindi ? 'कॉपी हो गया' : 'Copied') : (isHindi ? 'रिपोर्ट कॉपी करें' : 'Copy report')}</span>
           </button>
         </div>
+        {copyError && <p role="alert" className="mt-2 text-xs text-red-700">{isHindi ? 'कॉपी नहीं हो सका। ब्राउज़र अनुमति जाँचें।' : 'Could not copy. Check browser permissions and try again.'}</p>}
       </div>
 
-      <div className="p-5 space-y-5">
-        {/* Adherence Rate Banner */}
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 rounded-2xl shadow-sm flex items-center justify-between">
+      <div className="space-y-5 p-5">
+        <section aria-labelledby="adherence-heading" className="flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-emerald-700 to-teal-700 p-4 text-white shadow-sm">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-100">
-              अक्टूबर माह का अनुपालन (Monthly Adherence)
-            </span>
-            <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-3xl font-black tabular-nums">94%</span>
-              <span className="text-xs text-emerald-100 font-medium">उत्कृष्ट (Excellent)</span>
+            <h2 id="adherence-heading" className="text-xs font-semibold uppercase tracking-wide text-emerald-100">
+              {isHindi ? 'मासिक अनुपालन' : 'Monthly adherence'}
+            </h2>
+            <div className="mt-1 text-3xl font-black tabular-nums">
+              {stats.adherence === null ? '—' : `${stats.adherence}%`}
             </div>
-            <p className="text-[11px] text-emerald-100 mt-1">
-              72 में से 68 दवाइयाँ समय पर ली गईं
+            <p className="mt-1 text-xs text-emerald-100">
+              {isHindi ? `${stats.taken} ली गईं · ${stats.missed} छूटीं · ${stats.skipped} स्किप` : `${stats.taken} taken · ${stats.missed} missed · ${stats.skipped} skipped`}
+            </p>
+            <p className="mt-1 text-[11px] text-emerald-100">
+              {isHindi ? 'लंबित खुराकें प्रतिशत में शामिल नहीं हैं।' : 'Pending doses are excluded from the percentage.'}
             </p>
           </div>
-          <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-2xl">
-            🏆
-          </div>
-        </div>
+          <div aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/20 text-2xl">✓</div>
+        </section>
 
-        {/* Calendar View matching Storyboard Screen 5 */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-            <button className="p-1 text-slate-400 hover:text-slate-600">
-              <ChevronLeft className="w-5 h-5" />
+        <section aria-label={isHindi ? 'मासिक कैलेंडर' : 'Monthly calendar'} className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <button type="button" aria-label={isHindi ? 'पिछला महीना' : 'Previous month'} onClick={() => setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))} className="min-h-11 min-w-11 rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
+              <ChevronLeft className="mx-auto h-5 w-5" />
             </button>
-            <h3 className="text-sm font-bold text-slate-900">
-              {currentMonthName}
-            </h3>
-            <button className="p-1 text-slate-400 hover:text-slate-600">
-              <ChevronRight className="w-5 h-5" />
+            <h2 className="text-sm font-bold text-slate-900">{monthLabel(month, language)}</h2>
+            <button type="button" aria-label={isHindi ? 'अगला महीना' : 'Next month'} onClick={() => setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))} className="min-h-11 min-w-11 rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
+              <ChevronRight className="mx-auto h-5 w-5" />
             </button>
           </div>
-
-          <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 pb-1">
-            <span>S</span>
-            <span>M</span>
-            <span>T</span>
-            <span>W</span>
-            <span>T</span>
-            <span>F</span>
-            <span>S</span>
+          <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-500">
+            {dayNames.map((name, index) => <span key={`${name}-${index}`}>{name}</span>)}
           </div>
-
           <div className="grid grid-cols-7 gap-1.5">
-            {historyDays.map(item => {
-              const isFull = item.status === 'full';
-              const isPartial = item.status === 'partial';
-              const isCurrent = item.status === 'current';
-
+            {monthDays.map(item => {
+              if (item.day === null) return <div key={item.key} aria-hidden="true" className="h-10" />;
+              const date = new Date(month.getFullYear(), month.getMonth(), item.day);
+              const dateKey = localDateKey(date);
+              const dayEvents = eventsByDate.get(dateKey) || [];
+              const status = getDayStatus(dayEvents);
+              const isToday = dateKey === todayKey;
+              const color = status === 'complete'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                : status === 'partial'
+                  ? 'border-amber-200 bg-amber-50 text-amber-900'
+                  : status === 'missed'
+                    ? 'border-red-200 bg-red-50 text-red-900'
+                    : status === 'pending'
+                      ? 'border-slate-200 bg-slate-50 text-slate-600'
+                      : 'border-transparent bg-white text-slate-400';
               return (
-                <div
-                  key={item.day}
-                  className={`h-8 rounded-lg flex flex-col items-center justify-center text-xs font-bold transition-all ${
-                    isCurrent
-                      ? 'bg-blue-600 text-white ring-2 ring-blue-300'
-                      : isFull
-                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                      : isPartial
-                      ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                      : 'text-slate-300 bg-slate-50'
-                  }`}
-                >
+                <div key={item.key} title={dayEvents.length ? `${dayEvents.length} ${isHindi ? 'खुराकें दर्ज' : 'dose records'}` : (isHindi ? 'कोई रिकॉर्ड नहीं' : 'No records')} className={`flex h-10 flex-col items-center justify-center rounded-lg border text-xs font-bold ${color} ${isToday ? 'ring-2 ring-blue-500 ring-offset-1' : ''}`}>
                   <span>{item.day}</span>
-                  {isFull && <span className="w-1 h-1 rounded-full bg-emerald-600 -mt-0.5"></span>}
+                  {dayEvents.length > 0 && <span className="text-[9px] font-medium">{dayEvents.filter(event => event.status === 'taken').length}/{dayEvents.length}</span>}
                 </div>
               );
             })}
           </div>
-
-          {/* Legend */}
-          <div className="flex items-center justify-center gap-4 pt-2 text-[11px] text-slate-500 font-medium">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              सभी ली गईं
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-              देर से या आंशिक
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-              आज का दिन
-            </span>
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 pt-1 text-[11px] text-slate-600">
+            <span>🟢 {isHindi ? 'सभी ली गईं' : 'All taken'}</span>
+            <span>🟡 {isHindi ? 'कुछ ली गईं' : 'Partial'}</span>
+            <span>🔴 {isHindi ? 'कोई नहीं ली गई' : 'None taken'}</span>
+            <span>⚪ {isHindi ? 'कोई रिकॉर्ड नहीं' : 'No records'}</span>
           </div>
-        </div>
+          <p className="text-center text-[11px] text-slate-500">{isHindi ? 'रिकॉर्ड न होने का अर्थ यह नहीं है कि दवा छूट गई।' : 'No record does not mean a dose was missed.'}</p>
+        </section>
 
-        {/* Detailed Timeline matching Storyboard Screen 5 */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide">
-            दैनिक रिकॉर्ड (Daily Log)
-          </h3>
-
-          {/* Today */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
-            <div className="flex items-center justify-between text-xs font-bold text-slate-900 pb-1.5 border-b border-slate-100">
-              <span>{formatScheduleDate(getTodayDateString(), language)}</span>
-              <span className="text-emerald-700">1 ली गई · 1 छूटी</span>
+        <section aria-labelledby="daily-log-heading" className="space-y-3">
+          <h2 id="daily-log-heading" className="text-sm font-bold uppercase tracking-wide text-slate-700">
+            {isHindi ? 'आज का दैनिक रिकॉर्ड' : "Today's dose log"}
+          </h2>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2 text-xs font-bold text-slate-900">
+              <span>{formatScheduleDate(todayKey, language)}</span>
+              <span className="text-slate-500">{selectedDayEvents.length} {isHindi ? 'रिकॉर्ड' : 'records'}</span>
             </div>
-
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-800">8:12 AM · Amlodipine 5mg</span>
-                <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Taken</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-800">9:05 AM · Metformin 500mg</span>
-                <span className="font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded">Missed</span>
-              </div>
-              <div className="flex items-center justify-between text-slate-400">
-                <span>1:10 PM · Vitamin D3</span>
-                <span className="bg-slate-100 px-2 py-0.5 rounded">Pending</span>
-              </div>
-            </div>
+            {selectedDayEvents.length === 0 ? (
+              <p className="py-3 text-sm text-slate-500">{isHindi ? 'आज के लिए कोई खुराक रिकॉर्ड नहीं है। यह अपने आप में छूटी हुई खुराक का प्रमाण नहीं है।' : 'No dose records are saved for today. This alone does not indicate a missed dose.'}</p>
+            ) : (
+              <ul className="space-y-3">
+                {selectedDayEvents.map(event => {
+                  const statusLabel = event.status === 'taken'
+                    ? (isHindi ? 'ली गई' : 'Taken')
+                    : event.status === 'missed'
+                      ? (isHindi ? 'छूटी' : 'Missed')
+                      : event.status === 'skipped'
+                        ? (isHindi ? 'स्किप' : 'Skipped')
+                        : event.status === 'snoozed'
+                          ? (isHindi ? 'स्नूज़' : 'Snoozed')
+                          : (isHindi ? 'लंबित' : 'Pending');
+                  const statusClass = event.status === 'taken'
+                    ? 'bg-emerald-50 text-emerald-800'
+                    : event.status === 'missed'
+                      ? 'bg-red-50 text-red-800'
+                      : event.status === 'skipped'
+                        ? 'bg-slate-100 text-slate-700'
+                        : 'bg-amber-50 text-amber-800';
+                  return (
+                    <li key={event.id} className="flex items-start justify-between gap-3 text-sm">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-slate-800">{event.time} · {isHindi ? event.medicineHindiName : event.medicineName}</p>
+                        <p className="mt-0.5 text-xs text-slate-500">{event.dosage}{event.takenAt ? ` · ${isHindi ? 'ली गई' : 'Taken at'} ${event.takenAt}` : ''}</p>
+                      </div>
+                      <span className={`shrink-0 rounded px-2 py-1 text-xs font-bold ${statusClass}`}>{statusLabel}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
-
-          {/* Yesterday */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
-            <div className="flex items-center justify-between text-xs font-bold text-slate-900 pb-1.5 border-b border-slate-100">
-              <span>{formatScheduleDate(getTodayDateString(-1), language)}</span>
-              <span className="text-emerald-700">सभी 4 दवाइयाँ ली गईं ✓</span>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-800">8:02 AM · Amlodipine 5mg</span>
-                <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Taken</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-800">9:01 AM · Metformin 500mg</span>
-                <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Taken</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-800">1:03 PM · Vitamin D3</span>
-                <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Taken</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
     </div>
   );
