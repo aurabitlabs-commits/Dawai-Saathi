@@ -104,7 +104,11 @@ export const AddMedicineModal: React.FC = () => {
 
     // Assign appropriate visual preset based on medicine
     if (item.name.toLowerCase().includes('amlodipine')) {
+<<<<<<< HEAD
+      setStripImage('/images/medicine_pill_white_round_1792323535639.jpg');
+=======
       setStripImage('/src/assets/images/medicine_pill_white_round_1792323535639.jpg');
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
       setPillAppearance({
         shape: 'round',
         primaryColor: '#ffffff',
@@ -115,7 +119,11 @@ export const AddMedicineModal: React.FC = () => {
         imprintText: '5',
       });
     } else if (item.name.toLowerCase().includes('metformin')) {
+<<<<<<< HEAD
+      setStripImage('/images/medicine_strip_sample_1792322618845.jpg');
+=======
       setStripImage('/src/assets/images/medicine_strip_sample_1792322618845.jpg');
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
       setPillAppearance({
         shape: 'oval',
         primaryColor: '#ffffff',
@@ -126,7 +134,11 @@ export const AddMedicineModal: React.FC = () => {
         imprintText: '500',
       });
     } else if (item.name.toLowerCase().includes('vitamin d3')) {
+<<<<<<< HEAD
+      setStripImage('/images/medicine_pill_capsule_gold_1792323535542.jpg');
+=======
       setStripImage('/src/assets/images/medicine_pill_capsule_gold_1792323535542.jpg');
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
       setPillAppearance({
         shape: 'capsule',
         primaryColor: '#f59e0b',
