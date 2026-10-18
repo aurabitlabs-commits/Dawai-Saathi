@@ -17,6 +17,10 @@ import { CaregiverFamily } from './components/caregiver/CaregiverFamily';
 import { AddMedicineModal } from './components/caregiver/AddMedicineModal';
 import { WelcomeModal } from './components/onboarding/WelcomeModal';
 import { DuplicateDoseModal } from './components/elder/DuplicateDoseModal';
+<<<<<<< HEAD
+import { isDemoMode } from './utils/demo';
+=======
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
 import {
   Bell,
   Heart,
@@ -40,7 +44,12 @@ const MainApp: React.FC = () => {
       {/* Top Application Bar */}
       <HeaderBar onOpenWelcome={() => setShowWelcome(true)} />
 
+<<<<<<< HEAD
+      {/* Synchronized Live Demo Notice / Device Switcher — developer only (?demo=1) */}
+      {isDemoMode && (
+=======
       {/* Synchronized Live Demo Notice / Device Switcher */}
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
       <div className="bg-slate-900 text-white text-xs px-4 py-2 border-b border-slate-800">
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -73,6 +82,10 @@ const MainApp: React.FC = () => {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
+      )}
+=======
+>>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
 
       {/* Main Container: Mobile Frame or Full Width */}
       <main className="flex-1 flex justify-center p-0 sm:py-6 sm:px-4">
