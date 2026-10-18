@@ -2,5 +2,7 @@
   "name": "Dawai Saathi",
   "description": "Medicine reminder with family alert. Hindi-first, large-text, senior-friendly medication adherence app with remote caregiver synchronization.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

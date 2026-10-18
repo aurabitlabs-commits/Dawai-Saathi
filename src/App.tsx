@@ -17,49 +17,30 @@ import { CaregiverFamily } from './components/caregiver/CaregiverFamily';
 import { AddMedicineModal } from './components/caregiver/AddMedicineModal';
 import { WelcomeModal } from './components/onboarding/WelcomeModal';
 import { DuplicateDoseModal } from './components/elder/DuplicateDoseModal';
-<<<<<<< HEAD
-import { isDemoMode } from './utils/demo';
-=======
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
-import {
-  Bell,
-  Heart,
-  Info,
-  ShieldCheck,
-  Smartphone,
-  Volume2,
-} from 'lucide-react';
+import { Bell } from 'lucide-react';
 
 const MainApp: React.FC = () => {
-  const { role, setRole, language, triggerSimulatedReminder, alerts, doses } = useApp();
+  const { role, triggerSimulatedReminder } = useApp();
   const [caregiverTab, setCaregiverTab] = useState('dashboard');
   const [showWelcome, setShowWelcome] = useState(false);
   const [deviceFrameMode, setDeviceFrameMode] = useState<'mobile' | 'expanded'>('mobile');
-
-  const isHindi = language === 'hi';
-  const unhandledAlerts = alerts.filter(a => a.status === 'unclaimed').length;
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900">
       {/* Top Application Bar */}
       <HeaderBar onOpenWelcome={() => setShowWelcome(true)} />
 
-<<<<<<< HEAD
-      {/* Synchronized Live Demo Notice / Device Switcher — developer only (?demo=1) */}
-      {isDemoMode && (
-=======
-      {/* Synchronized Live Demo Notice / Device Switcher */}
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
+      {/* Synchronized Live Demo Notice / Device Switcher — clearly labels application as a local demo */}
       <div className="bg-slate-900 text-white text-xs px-4 py-2 border-b border-slate-800">
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-semibold">
-              डेमो सिंक (Local Demo · Multi-Tab Broadcast Sync):
+            <span className="font-semibold text-emerald-400">
+              लोकल डेमो मोड (Local Demo · Multi-Tab Sync):
             </span>
             <span className="text-slate-300">
               {role === 'elder'
-                ? 'दादू का फोन (Elder View) - बड़ा टेक्स्ट, हिंदी वॉइस'
+                ? 'दादू का फोन (Elder View) - बड़ा टेक्स्ट, हिंदी आवाज़'
                 : 'केयरगिवर का फोन (Caregiver View) - रिमोट मॉनिटरिंग'}
             </span>
           </div>
@@ -82,10 +63,6 @@ const MainApp: React.FC = () => {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
-      )}
-=======
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
 
       {/* Main Container: Mobile Frame or Full Width */}
       <main className="flex-1 flex justify-center p-0 sm:py-6 sm:px-4">

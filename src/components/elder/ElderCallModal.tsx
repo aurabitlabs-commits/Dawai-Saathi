@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { soundService } from '../../utils/audio';
-import { Phone, PhoneCall, PhoneOff, UserCheck, X } from 'lucide-react';
+import { Phone, PhoneCall, PhoneOff, UserCheck } from 'lucide-react';
 
 export const ElderCallModal: React.FC = () => {
   const { showCallModal, setShowCallModal, elder, language } = useApp();
@@ -27,23 +27,18 @@ export const ElderCallModal: React.FC = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <div role="dialog" aria-modal="true" aria-labelledby="call-title" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="call-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+    >
       <div className="w-full max-w-md bg-white rounded-3xl p-6 text-center shadow-2xl border border-slate-100 flex flex-col items-center">
         {/* Header */}
         <h2 id="call-title" className="text-2xl font-extrabold text-slate-900">
           {isHindi ? 'परिवार से बात करें' : 'Call Family Member'}
         </h2>
         <p className="text-lg font-semibold text-slate-700 mt-1">
-=======
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-white rounded-3xl p-6 text-center shadow-2xl border border-slate-100 flex flex-col items-center">
-        {/* Header */}
-        <h2 className="text-2xl font-black text-slate-900">
-          {isHindi ? 'परिवार से बात करें' : 'Call Family Member'}
-        </h2>
-        <p className="text-sm font-semibold text-slate-500 mt-1">
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
           {isHindi ? 'एक टैप से सीधे परिवार को कॉल करें' : 'One tap direct call to family'}
         </p>
 
@@ -63,32 +58,20 @@ export const ElderCallModal: React.FC = () => {
           <h3 className="text-2xl font-black text-slate-900 mt-3">
             {contact.name}
           </h3>
-<<<<<<< HEAD
           <p className="text-xl font-bold text-blue-900">
-=======
-          <p className="text-base font-semibold text-blue-800">
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
             {contact.phone}
           </p>
 
           {/* Call Status Indicator */}
           {callState === 'calling' && (
-<<<<<<< HEAD
-            <div className="mt-3 px-4 py-1.5 bg-blue-100 text-blue-900 font-bold rounded-full text-lg animate-pulse flex items-center gap-2">
-=======
-            <div className="mt-3 px-4 py-1.5 bg-blue-100 text-blue-900 font-bold rounded-full text-sm animate-pulse flex items-center gap-2">
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
+            <div className="mt-3 px-4 py-1.5 bg-blue-100 text-blue-900 font-bold rounded-full text-base animate-pulse flex items-center gap-2">
               <PhoneCall className="w-4 h-4 animate-bounce" />
               <span>{isHindi ? 'कॉल मिल रहा है...' : 'Ringing...'}</span>
             </div>
           )}
 
           {callState === 'connected' && (
-<<<<<<< HEAD
-            <div className="mt-3 px-4 py-1.5 bg-emerald-100 text-emerald-900 font-bold rounded-full text-lg flex items-center gap-2">
-=======
-            <div className="mt-3 px-4 py-1.5 bg-emerald-100 text-emerald-900 font-bold rounded-full text-sm flex items-center gap-2">
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
+            <div className="mt-3 px-4 py-1.5 bg-emerald-100 text-emerald-900 font-bold rounded-full text-base flex items-center gap-2">
               <UserCheck className="w-4 h-4 text-emerald-700" />
               <span>{isHindi ? 'बात हो रही है (00:42)' : 'Connected (00:42)'}</span>
             </div>
@@ -120,11 +103,7 @@ export const ElderCallModal: React.FC = () => {
               setCallState('idle');
               setShowCallModal(false);
             }}
-<<<<<<< HEAD
             className="w-full min-h-[56px] text-lg font-bold text-slate-800 hover:text-slate-900"
-=======
-            className="w-full py-3.5 text-base font-bold text-slate-600 hover:text-slate-800"
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
           >
             {isHindi ? 'बंद करें' : 'Close'}
           </button>

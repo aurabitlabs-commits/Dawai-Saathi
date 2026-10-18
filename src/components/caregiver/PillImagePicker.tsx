@@ -24,11 +24,7 @@ const COLOR_OPTIONS = [
 const PRESETS = [
   {
     name: 'सफेद गोल गोली (बीपी)',
-<<<<<<< HEAD
     stripImage: '/images/medicine_pill_white_round_1792323535639.jpg',
-=======
-    stripImage: '/src/assets/images/medicine_pill_white_round_1792323535639.jpg',
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     appearance: {
       shape: 'round' as PillShape,
       primaryColor: '#ffffff',
@@ -41,11 +37,7 @@ const PRESETS = [
   },
   {
     name: 'सफेद लंबी गोली (शुगर)',
-<<<<<<< HEAD
     stripImage: '/images/medicine_strip_sample_1792322618845.jpg',
-=======
-    stripImage: '/src/assets/images/medicine_strip_sample_1792322618845.jpg',
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     appearance: {
       shape: 'oval' as PillShape,
       primaryColor: '#f8fafc',
@@ -58,11 +50,7 @@ const PRESETS = [
   },
   {
     name: 'सुनहरा कैप्सूल (विटामिन D)',
-<<<<<<< HEAD
     stripImage: '/images/medicine_pill_capsule_gold_1792323535542.jpg',
-=======
-    stripImage: '/src/assets/images/medicine_pill_capsule_gold_1792323535542.jpg',
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
     appearance: {
       shape: 'capsule' as PillShape,
       primaryColor: '#f59e0b',

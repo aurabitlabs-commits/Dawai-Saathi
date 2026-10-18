@@ -63,11 +63,7 @@ export const CaregiverDashboard: React.FC<{
           <div className="flex items-center gap-3">
             <div className="relative">
               <img
-<<<<<<< HEAD
                 src="/images/elder_dadaji_avatar_1792322618648.jpg"
-=======
-                src="/src/assets/images/elder_dadaji_avatar_1792322618648.jpg"
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
                 alt="Dadaji"
                 className="w-12 h-12 rounded-full object-cover border-2 border-emerald-500 shadow-sm"
               />
@@ -154,11 +150,7 @@ export const CaregiverDashboard: React.FC<{
           <div className="bg-red-50/90 border-2 border-red-300 rounded-2xl p-4 shadow-sm space-y-3">
             <div className="flex items-start gap-3">
               <PillVisual
-<<<<<<< HEAD
                 stripImage="/images/medicine_strip_sample_1792322618845.jpg"
-=======
-                stripImage="/src/assets/images/medicine_strip_sample_1792322618845.jpg"
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
                 pillAppearance={{
                   shape: 'oval',
                   primaryColor: '#ffffff',
@@ -233,11 +225,7 @@ export const CaregiverDashboard: React.FC<{
           <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <PillVisual
-<<<<<<< HEAD
                 stripImage="/images/medicine_pill_white_round_1792323535639.jpg"
-=======
-                stripImage="/src/assets/images/medicine_pill_white_round_1792323535639.jpg"
->>>>>>> 34007d1cb821c6c4f13dce955fdddedd39e1ea63
                 pillAppearance={{
                   shape: 'round',
                   primaryColor: '#ffffff',
