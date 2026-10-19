@@ -2,7 +2,6 @@ import React from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Bell,
-  Heart,
   HelpCircle,
   Languages,
 } from 'lucide-react';
@@ -28,15 +27,15 @@ export const HeaderBar: React.FC<{
         {/* Brand Zone */}
         <div className="flex items-center gap-2.5 shrink-0">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-400 to-cyan-500 text-white flex items-center justify-center shadow-xs">
-            <Heart className="w-5 h-5 fill-white" />
+            <span className="text-sm font-black tracking-tight">SP</span>
           </div>
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-lg font-extrabold text-white">
-                Dawai Saathi
+                SehatParivaar
               </span>
               <span className="text-xs font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">
-                दवाई साथी
+                सेहत परिवार
               </span>
             </div>
             <p className="text-xs font-semibold text-slate-600 mt-0.5">
