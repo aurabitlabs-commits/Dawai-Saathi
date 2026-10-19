@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "appName": "SehatParivaar",
+  "tagline": "Apno ki sehat, apno ka khayal.",
+  "today": "Today",
+  "medicines": "Medicines",
+  "history": "History",
+  "settings": "Settings",
+  "addMedicine": "Add medicine",
+  "taken": "Taken",
+  "skip": "Skip",
+  "snooze": "Snooze",
+  "emptyToday": "No doses scheduled for today.",
+  "offlinePrivacy": "Your medicine data stays on this phone."
+}
