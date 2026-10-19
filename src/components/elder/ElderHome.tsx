@@ -90,20 +90,20 @@ export const ElderHome: React.FC = () => {
 
   return (
     <div className="flex min-h-full flex-col bg-[#F4F7FB] text-[#10243A] font-sans">
-      <header className="border-b border-[#E0E8F0] bg-white px-5 pb-5 pt-5 shadow-[0_6px_24px_rgba(12,35,58,0.04)]">
+      <header className="border-b border-[#203B59] bg-[#10243A] px-5 pb-5 pt-5 shadow-[0_10px_30px_rgba(8,21,38,0.18)]">
         <div className="mx-auto flex w-full max-w-lg items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-lg font-semibold text-[#52657A]">
+            <p className="text-lg font-semibold text-[#B7C9DC]">
               {formatScheduleDate(todayDateStr, language)}
             </p>
-            <h1 className="mt-1 text-3xl font-extrabold leading-tight text-[#10243A]">
+            <h1 className="mt-1 text-3xl font-extrabold leading-tight text-white">
               {isHindi ? `नमस्ते, ${elder.honorific || 'पापा'}` : `Namaste, ${elder.honorific || 'Papa'}`}
             </h1>
           </div>
           <div className="flex shrink-0 gap-2">
             <button
               onClick={handleSpeakOverview}
-              className="flex min-h-[56px] min-w-[56px] items-center justify-center gap-2 rounded-xl border-2 border-[#CBD7E3] bg-white px-3 text-[#10243A] hover:bg-[#EAF0F6]"
+              className="flex min-h-[56px] min-w-[56px] items-center justify-center gap-2 rounded-xl border-2 border-[#3B5877] bg-[#18334F] px-3 text-white hover:bg-[#244563]"
               aria-label={isHindi ? "आज की दवाइयाँ सुनें" : "Listen to today's medicine summary"}
               title={isHindi ? 'सुनें' : 'Listen'}
             >
@@ -112,7 +112,7 @@ export const ElderHome: React.FC = () => {
             </button>
             <button
               onClick={() => setShowOptionsMenu(true)}
-              className="flex min-h-[56px] min-w-[56px] items-center justify-center rounded-xl border-2 border-[#CBD7E3] bg-white text-[#10243A] hover:bg-[#EAF0F6]"
+              className="flex min-h-[56px] min-w-[56px] items-center justify-center rounded-xl border-2 border-[#3B5877] bg-[#18334F] text-white hover:bg-[#244563]"
               aria-label={isHindi ? 'अन्य विकल्प खोलें' : 'Open more options'}
             >
               <Menu className="h-6 w-6" aria-hidden="true" />
@@ -122,7 +122,7 @@ export const ElderHome: React.FC = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-5 px-4 py-5 sm:px-5">
-        <section className="rounded-2xl border border-[#E0E8F0] bg-white p-4" aria-label={isHindi ? 'आज की स्थिति' : "Today's status"}>
+        <section className="rounded-2xl border border-[#B8DDE2] bg-[#E7F6F7] p-4 shadow-[0_8px_24px_rgba(8,126,139,0.07)]" aria-label={isHindi ? 'आज की स्थिति' : "Today's status"}>
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-base font-semibold text-[#52657A]">{isHindi ? 'आज की दवाइयाँ' : "Today's medicines"}</p>
@@ -150,27 +150,27 @@ export const ElderHome: React.FC = () => {
         </section>
 
         {nextDose ? (
-          <section className="rounded-2xl border-2 border-[#087E8B] bg-white p-5 shadow-[0_12px_32px_rgba(8,126,139,0.10)]" aria-labelledby="next-dose-title">
+          <section className="rounded-2xl border-2 border-[#244C70] bg-gradient-to-br from-[#102A45] to-[#173B59] p-5 text-white shadow-[0_16px_34px_rgba(8,21,38,0.22)]" aria-labelledby="next-dose-title">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className={`rounded-lg px-3 py-2 text-base font-bold ${nextDose.status === 'missed' ? 'bg-red-100 text-red-900' : 'bg-[#DDF5F4] text-[#075D66]'}`}>
                 {nextDose.status === 'missed'
                   ? (isHindi ? 'खुराक छूट गई' : 'Missed dose')
                   : (isHindi ? 'अगली दवाई' : 'Next medicine')}
               </p>
-              <p className="text-3xl font-extrabold tabular-nums text-[#10243A]">{nextDose.time}</p>
+              <p className="text-3xl font-extrabold tabular-nums text-white">{nextDose.time}</p>
             </div>
 
             <div className="mt-5 flex items-start gap-4">
               <PillVisual stripImage={nextDose.stripImage} pillAppearance={nextDose.pillAppearance} size="lg" language={language} />
               <div className="min-w-0 flex-1">
-                <h2 id="next-dose-title" className="break-words text-2xl font-extrabold leading-snug text-[#10243A]">
+                <h2 id="next-dose-title" className="break-words text-2xl font-extrabold leading-snug text-white">
                   {isHindi ? nextDose.medicineHindiName : nextDose.medicineName}
                 </h2>
-                <p className="mt-2 inline-flex rounded-lg border border-[#CBD7E3] bg-[#F5F8FC] px-3 py-2 text-lg font-bold text-[#10243A]">
+                <p className="mt-2 inline-flex rounded-lg border border-[#52718F] bg-[#244563] px-3 py-2 text-lg font-bold text-white">
                   {nextDose.dosage}
                 </p>
                 {mealFor(nextDose.medicineId) && (
-                  <p className="mt-2 text-base font-semibold text-[#263D56]">
+                  <p className="mt-2 text-base font-semibold text-[#D5E4F1]">
                     {isHindi ? 'खाने के संबंध में: ' : 'Food instruction: '}{mealFor(nextDose.medicineId)}
                   </p>
                 )}
@@ -185,15 +185,15 @@ export const ElderHome: React.FC = () => {
               <CheckCircle2 className="h-7 w-7 shrink-0" aria-hidden="true" />
               <span>{isHindi ? 'दवाई ले ली' : 'I took my medicine'}</span>
             </button>
-            <p className="mt-3 text-center text-base text-[#52657A]">
+            <p className="mt-3 text-center text-base font-semibold text-[#D5E4F1]">
               {isHindi ? 'दवाई लेने के बाद ही बटन दबाएँ।' : 'Tap only after you have taken the medicine.'}
             </p>
             {getMedicineNotes(nextDose.medicineId) && (
-              <details className="mt-4 rounded-xl border border-[#E0E8F0] bg-[#F5F8FC] p-3">
-                <summary className="cursor-pointer py-1 text-base font-bold text-[#10243A]">
+              <details className="mt-4 rounded-xl border border-[#52718F] bg-[#18334F] p-3">
+                <summary className="cursor-pointer py-1 text-base font-bold text-white">
                   {isHindi ? 'अतिरिक्त निर्देश देखें' : 'View additional instructions'}
                 </summary>
-                <p className="mt-2 text-base leading-relaxed text-[#263D56]">{getMedicineNotes(nextDose.medicineId)}</p>
+                <p className="mt-2 text-base leading-relaxed text-[#E1EBF4]">{getMedicineNotes(nextDose.medicineId)}</p>
               </details>
             )}
           </section>
@@ -207,7 +207,7 @@ export const ElderHome: React.FC = () => {
                     ? (isHindi ? 'आज की सभी दवाइयाँ पूरी!' : 'All medicines marked as taken')
                     : (isHindi ? 'आज की दवाइयों की सूची उपलब्ध नहीं है' : 'No medicines are listed for today')}
                 </h2>
-                <p className="mt-2 text-base leading-relaxed text-[#263D56]">
+                <p className="mt-2 text-base leading-relaxed text-[#E1EBF4]">
                   {allDone
                     ? (isHindi ? 'बहुत अच्छा! यदि कोई खुराक छूट गई हो, तो परिवार से पुष्टि करें।' : 'Well done. If you think a dose is missing, check with your caregiver.')
                     : (isHindi ? 'कृपया दवाई लेने से पहले अपने परिवार या देखभाल करने वाले से पुष्टि करें।' : 'Please confirm your medicine plan with your family caregiver before taking any medicine.')}
@@ -228,13 +228,13 @@ export const ElderHome: React.FC = () => {
           <Phone className="h-5 w-5 shrink-0 text-slate-600" aria-hidden="true" />
         </button>
 
-        <section className="overflow-hidden rounded-2xl border border-[#CBD7E3] bg-white">
+        <section className="overflow-hidden rounded-2xl border border-[#B8C9DC] bg-[#EAF1F8]">
           <button
             type="button"
             onClick={() => setShowSchedule(value => !value)}
             aria-expanded={showSchedule}
             aria-controls="elder-todays-schedule"
-            className="flex min-h-[64px] w-full items-center justify-between gap-3 px-4 py-4 text-left hover:bg-[#F5F8FC]"
+            className="flex min-h-[64px] w-full items-center justify-between gap-3 px-4 py-4 text-left bg-[#EAF1F8] hover:bg-[#DCE8F3]"
           >
             <span>
               <span className="block text-lg font-extrabold text-[#10243A]">{isHindi ? 'आज की पूरी सूची' : "Today's full schedule"}</span>
@@ -295,20 +295,20 @@ export const ElderHome: React.FC = () => {
             if (event.target === event.currentTarget) setShowOptionsMenu(false);
           }}
         >
-          <div className="w-full max-w-lg rounded-t-2xl border border-[#CBD7E3] bg-white p-5 shadow-2xl sm:rounded-2xl">
-            <div className="flex items-center justify-between gap-3 border-b border-[#E0E8F0] pb-4">
+          <div className="w-full max-w-lg rounded-t-2xl border border-[#294966] bg-[#10243A] p-5 text-white shadow-2xl sm:rounded-2xl">
+            <div className="flex items-center justify-between gap-3 border-b border-[#294966] pb-4">
               <h2 id="elder-menu-title" className="text-xl font-extrabold text-[#10243A]">
                 {isHindi ? 'अन्य विकल्प' : 'More options'}
               </h2>
-              <button onClick={() => setShowOptionsMenu(false)} className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-xl border border-[#CBD7E3] text-[#10243A] hover:bg-[#EAF0F6]" aria-label={isHindi ? 'बंद करें' : 'Close'}>
+              <button onClick={() => setShowOptionsMenu(false)} className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-xl border border-[#45627F] text-white hover:bg-[#18334F]" aria-label={isHindi ? 'बंद करें' : 'Close'}>
                 <X className="h-6 w-6" aria-hidden="true" />
               </button>
             </div>
             <div className="space-y-3 py-4">
-              <div className="rounded-xl border border-[#CBD7E3] bg-[#F5F8FC] p-4">
-                <p className="text-base font-bold text-[#10243A]">{isHindi ? 'परिवार से जुड़ाव' : 'Family connection'}</p>
-                <p className="mt-1 text-lg font-semibold text-[#10243A]">{contact.name} ({contact.relation})</p>
-                <p className="mt-1 text-base text-[#52657A]">
+              <div className="rounded-xl border border-[#294966] bg-[#18334F] p-4">
+                <p className="text-base font-bold text-white">{isHindi ? 'परिवार से जुड़ाव' : 'Family connection'}</p>
+                <p className="mt-1 text-lg font-semibold text-white">{contact.name} ({contact.relation})</p>
+                <p className="mt-1 text-base text-[#B7C9DC]">
                   {elder.sharingPaused
                     ? (isHindi ? 'शेयरिंग रुकी हुई है' : 'Sharing is paused')
                     : (isHindi ? 'सिंक सक्रिय' : 'Sync active')}
@@ -318,7 +318,7 @@ export const ElderHome: React.FC = () => {
                     setShowOptionsMenu(false);
                     setShowWhoCanSeeModal(true);
                   }}
-                  className="mt-3 min-h-[52px] w-full rounded-xl border-2 border-[#CBD7E3] bg-white px-4 py-3 text-base font-bold text-[#10243A] hover:bg-[#EAF0F6]"
+                  className="mt-3 min-h-[52px] w-full rounded-xl border-2 border-[#CBD7E3] bg-white px-4 py-3 text-base font-bold text-white hover:bg-[#EAF0F6]"
                 >
                   {isHindi ? 'कौन देख सकता है?' : 'Who can see my information?'}
                 </button>
@@ -328,7 +328,7 @@ export const ElderHome: React.FC = () => {
                   setShowOptionsMenu(false);
                   triggerSimulatedReminder();
                 }}
-                className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border-2 border-[#CBD7E3] bg-white p-4 text-left hover:bg-[#F5F8FC]"
+                className="flex min-h-[64px] w-full items-center gap-3 rounded-xl border-2 border-[#B8C9DC] bg-[#EAF1F8] p-4 text-left hover:bg-[#DCE8F3]"
               >
                 <Bell className="h-6 w-6 shrink-0 text-[#263D56]" aria-hidden="true" />
                 <span className="text-lg font-bold text-[#10243A]">{isHindi ? 'रिमाइंडर की आवाज़ जाँचें' : 'Test reminder sound'}</span>
@@ -338,7 +338,7 @@ export const ElderHome: React.FC = () => {
                 <p>{isHindi ? 'अपनी दवाई के बारे में संदेह हो तो परिवार या स्वास्थ्यकर्मी से पुष्टि करें।' : 'If you are unsure about a medicine or dose, confirm with your caregiver or healthcare professional.'}</p>
               </div>
             </div>
-            <button onClick={() => setShowOptionsMenu(false)} className="min-h-[60px] w-full rounded-xl bg-slate-900 px-4 py-3 text-lg font-bold text-white hover:bg-slate-800">
+            <button onClick={() => setShowOptionsMenu(false)} className="min-h-[60px] w-full rounded-xl bg-[#087E8B] px-4 py-3 text-lg font-bold text-white hover:bg-[#066A75]">
               {isHindi ? 'बंद करें' : 'Close'}
             </button>
           </div>
