@@ -1,34 +1,49 @@
 # SehatParivaar — React Native offline medicine reminder app
 
-React Native + TypeScript + Expo Android-first implementation of the uploaded architecture/LLD, adapted to the product requirement of **no database and no backend**.
+React Native + TypeScript + Expo Android-first app. No account, database, cloud backend, or analytics is required by this mobile app. Medicine data is stored as versioned JSON in private app storage.
 
-## Stack and privacy
-- React Native + Expo, TypeScript.
-- Local app data in AsyncStorage as versioned JSON; a previous known-good copy is retained before writes.
-- Local notifications; no login, backend, Supabase, Firebase, analytics or cloud sync.
-- Localised settings (English/Hindi), large-text preference and elder-friendly UI foundations.
-- Domain types, schedule occurrence engine, validation, local storage and notification adapter separated from UI.
+## Run on Android
 
-## Run
-Requires Node.js 20+ and Expo's Android tooling. From this directory:
+Requires Node.js 20+.
 
 ```sh
+cd mobile-rn
 npm install
 npx expo install --fix
 npx expo start
 ```
-Scan the QR code with Expo Go for basic UI iteration. For notification reliability and native Android configuration, use a development build and test on a real Android phone. Local notifications and background behavior must be tested on target Android versions and OEMs.
 
-## Current implementation status
-The initial React Native foundation is committed separately from the existing web prototype. The starter UI supports adding a medicine with one daily time, Today dose Taken/Skip actions, a medicine list with pause/resume, a basic history list, language/text-size preferences and local JSON persistence. The schedule engine supports daily, weekdays and interval occurrences.
+Use Expo Go for UI iteration only. Notification actions, exact alarms and reboot behavior require a native development/release build. Build and install that build on a physical Android phone before relying on reminders.
 
-**Not yet production-ready:** full 3-step medicine form, multiple-time schedule editor, editing/deletion UX, reliable per-dose notification IDs/actions, snooze/follow-up chains, reboot/time-change reconciliation, robust export/share and restore UI, full Hindi string catalog, calendar history, stock tracking, onboarding/permissions guide, and automated tests. Expo Go is not sufficient to validate all native reminder behavior. Do not rely on this starter as the sole medication reminder until the release checklist and real-device tests pass.
+## Implemented in the current starter
 
-## Data safety
-User data is stored in the app's private device storage and is not automatically shared or backed up to cloud. Uninstalling the app or clearing app storage can delete data; export/restore needs to be completed and tested before production use. JSON is not encrypted by default, so protect the device and backups.
+- Add and edit medicines; delete medicine while retaining historical dose logs.
+- Multiple daily reminder times (up to eight), daily / selected-weekday / interval schedules, start/end date validation, dose quantity and instructions.
+- Basic stock count +/- controls and refill-threshold warning.
+- Today dose Taken / Skip / Snooze controls and dose history.
+- Per-occurrence semantic notification keys, notification Taken/Snooze actions, follow-up reminder scheduling, missed-dose marking while the app is open, and reminder reconciliation on startup and app foreground.
+- JSON export/share; validated restore by merge or replace; previous-valid JSON recovery warning.
+- English/Hindi strings for primary workflows, larger text preference applied to most main screens and form inputs, accessibility labels and tab states.
+- No cloud sync; data remains on this device.
 
-## Android reminder checklist
-- Test notification permission flow on Android 13+.
-- Check exact-alarm and battery/autostart settings on Vivo, Oppo, Xiaomi and Realme.
-- Test app closed, screen off, battery saver, reboot and time-zone/clock changes.
-- Verify taken/skip/snooze notification actions after implementing their native handlers.
+## Important limitations — not yet verified as production-ready
+
+- The notification library/platform may assign opaque native notification identifiers; the app uses stable semantic dose keys in notification payloads and reconciles its scheduled notifications. This is not the same as a guaranteed stable OS identifier.
+- Android/OEM delivery cannot be guaranteed from JavaScript alone. Reboot rescheduling, exact-alarm access, battery restrictions, force-stop behavior, notification actions from a killed process, time-zone changes and DST must be verified on a native build and the target phone. Foreground reconciliation is implemented; do not assume it can run while the OS has stopped the app.
+- Missed-dose detection runs when the app is open. It does not run as a guaranteed background worker.
+- JSON is not encrypted. Store exported backups securely. Restore validates the file before changing data, but recovery from every possible storage corruption scenario needs device testing.
+- Schema version is currently 1. Future schema changes must include explicit migrations; an unsupported future version should not be overwritten with defaults.
+- Hindi coverage is improved but not every system-generated error, notification string or accessibility announcement is translated. TalkBack must be tested with Hindi and English selected.
+- No automated tests, TypeScript check, Expo doctor, Android build or real-device test has been run as part of these commits. Treat this as an implementation pass, not release sign-off.
+
+## Real-device acceptance checklist
+
+1. Allow/deny notification permission on Android 13+ and verify the settings explanation.
+2. Test multiple times, weekday masks, interval schedules, invalid dates, end-before-start, duplicate times and medicine edits/deletion.
+3. Verify Taken and Snooze actions when app is foregrounded, backgrounded and removed from Recents.
+4. Test follow-up, missed dose, low stock, export/share, invalid JSON restore, merge, replace and recovery from a damaged primary data value.
+5. Reboot, change time and time zone, enable battery saver, force-stop the app, and test offline on the target Vivo/Android versions.
+6. Run TalkBack across every tab, form field, switch, modal and notification action; confirm text does not clip at largest size.
+7. Run `npm run typecheck`, `npx expo-doctor`, then build and install a native Android development build. Fix all errors before release.
+
+This app is a reminder aid, not a substitute for a clinician's instructions.
