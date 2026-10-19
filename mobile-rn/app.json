@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "SehatParivaar",
+    "slug": "sehat-parivaar",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "android": {
+      "package": "com.sehatparivaar.app",
+      "permissions": [
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "SCHEDULE_EXACT_ALARM"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#15977E",
+          "defaultChannel": "dose_reminders"
+        }
+      ]
+    ],
+    "extra": {
+      "offlineOnly": true
+    }
+  }
+}
