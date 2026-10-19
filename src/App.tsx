@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AuthGate } from './AuthGate';
 import { AppProvider, useApp } from './context/AppContext';
 import { HeaderBar } from './components/common/HeaderBar';
 import { BottomNav } from './components/common/BottomNav';
@@ -123,8 +124,12 @@ const MainApp: React.FC = () => {
 
 export default function App() {
   return (
-    <AppProvider>
-      <MainApp />
-    </AppProvider>
+    <AuthGate>
+      {(_user, _activeElder) => (
+        <AppProvider>
+          <MainApp />
+        </AppProvider>
+      )}
+    </AuthGate>
   );
 }
