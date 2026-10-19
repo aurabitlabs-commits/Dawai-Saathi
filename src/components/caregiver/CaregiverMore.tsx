@@ -16,9 +16,10 @@ import {
 
 interface CaregiverMoreProps {
   onTabChange: (tab: string) => void;
+  onOpenInstall?: () => void;
 }
 
-export const CaregiverMore: React.FC<CaregiverMoreProps> = ({ onTabChange }) => {
+export const CaregiverMore: React.FC<CaregiverMoreProps> = ({ onTabChange, onOpenInstall }) => {
   const { elder, language, speakPrompt, triggerSimulatedReminder } = useApp();
   const isHindi = language === 'hi';
 
@@ -67,8 +68,36 @@ export const CaregiverMore: React.FC<CaregiverMoreProps> = ({ onTabChange }) => 
           </div>
         </div>
 
-        {/* Core Nav Options: History & Family */}
+        {/* Core Nav Options: Install, History & Family */}
         <div className="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 overflow-hidden shadow-xs">
+          {/* 0. Install on Phone */}
+          {onOpenInstall && (
+            <button
+              onClick={onOpenInstall}
+              className="w-full p-4 flex items-center justify-between hover:bg-emerald-50/60 transition-colors text-left bg-emerald-50/30"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center border border-emerald-300">
+                  <Smartphone className="w-5 h-5 text-emerald-800" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-emerald-950 flex items-center gap-2">
+                    <span>{isHindi ? '📱 फोन में ऐप इंस्टॉल करें (PWA / APK)' : 'Install App on Phone'}</span>
+                    <span className="text-[10px] font-bold bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded">
+                      {isHindi ? 'गाइड' : 'Guide'}
+                    </span>
+                  </h3>
+                  <p className="text-xs text-emerald-800 font-medium">
+                    {isHindi
+                      ? 'Android Chrome, iPhone Safari या QR कोड से सीधे इंस्टॉल करें'
+                      : 'Step-by-step instructions for Android, iOS & QR code'}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-emerald-700" />
+            </button>
+          )}
+
           {/* 1. Medication History */}
           <button
             onClick={() => onTabChange('history')}

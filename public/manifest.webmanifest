@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "SehatParivaar - दवाई साथी",
+  "short_name": "SehatParivaar",
+  "description": "बुजुर्गों के लिए आसान दवाई रिमाइंडर और परिवार के लिए रीयल-टाइम अलर्ट - Senior-friendly Hindi medicine reminder with family alerts",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7F2",
+  "theme_color": "#047857",
+  "categories": ["medical", "health", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

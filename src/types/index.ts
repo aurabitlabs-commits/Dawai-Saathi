@@ -97,6 +97,7 @@ export interface ElderProfile {
   isOnline: boolean;
   lastSeenTime: string;
   sharingPaused: boolean;
+  photo?: string;
   emergencyContact: {
     name: string;
     relation: string;

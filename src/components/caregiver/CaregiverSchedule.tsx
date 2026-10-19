@@ -91,9 +91,9 @@ export const CaregiverSchedule: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-full pb-28">
+    <div className="flex flex-col min-h-full pb-28 bg-[#FAF7F2]">
       {/* Top Header */}
-      <div className="bg-white px-5 pt-4 pb-4 border-b border-slate-200">
+      <div className="bg-white px-5 pt-4 pb-4 border-b border-amber-200/80 shadow-2xs">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold text-slate-900">

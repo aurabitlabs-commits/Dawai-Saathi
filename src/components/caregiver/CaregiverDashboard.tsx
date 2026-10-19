@@ -66,9 +66,9 @@ export const CaregiverDashboard: React.FC<CaregiverDashboardProps> = ({ onTabCha
     todayDoses.length > 0 ? Math.round((completedDoses.length / todayDoses.length) * 100) : 100;
 
   return (
-    <div className="flex flex-col min-h-full pb-28">
+    <div className="flex flex-col min-h-full pb-28 bg-[#FAF7F2]">
       {/* Top Patient Bar */}
-      <div className="bg-white px-5 pt-4 pb-4 border-b border-slate-200">
+      <div className="bg-white px-5 pt-4 pb-4 border-b border-amber-200/80 shadow-2xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative">

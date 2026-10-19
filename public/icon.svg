@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857" />
+      <stop offset="50%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#064E3B" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background with subtle squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Warm Sun Aura for Elders -->
+  <circle cx="256" cy="240" r="170" fill="#FBBF24" opacity="0.12" />
+
+  <!-- Heart Base Shape -->
+  <g filter="url(#shadow)">
+    <path d="M256 420 C256 420, 96 320, 96 196 C96 138, 140 96, 198 96 C228 96, 248 112, 256 126 C264 112, 284 96, 314 96 C372 96, 416 138, 416 196 C416 320, 256 420, 256 420 Z" fill="#FFFFFF" />
+
+    <!-- Medicine Capsule inside the heart -->
+    <g transform="translate(166, 160) rotate(-35 90 60)">
+      <!-- Left Pill Half (Saffron Gold) -->
+      <path d="M 30,30 L 90,30 A 30,30 0 0,0 90,90 L 30,90 A 30,30 0 0,1 30,30 Z" fill="url(#goldGrad)" />
+      <!-- Right Pill Half (Pure White/Emerald) -->
+      <path d="M 90,30 L 150,30 A 30,30 0 0,1 150,90 L 90,90 A 30,30 0 0,0 90,30 Z" fill="#10B981" />
+      <!-- Center Pill Divider -->
+      <line x1="90" y1="28" x2="90" y2="92" stroke="#FFFFFF" stroke-width="4" />
+    </g>
+  </g>
+
+  <!-- Caring Hands / Sun Ray Accent -->
+  <circle cx="256" cy="100" r="16" fill="url(#goldGrad)" />
+  <circle cx="206" cy="115" r="10" fill="url(#goldGrad)" opacity="0.8" />
+  <circle cx="306" cy="115" r="10" fill="url(#goldGrad)" opacity="0.8" />
+</svg>
