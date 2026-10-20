@@ -22,6 +22,8 @@ Use Expo Go for UI iteration only. Notification actions, exact alarms and reboot
 - Basic stock count +/- controls and refill-threshold warning.
 - Today dose Taken / Skip / Snooze controls and dose history.
 - Per-occurrence semantic notification keys, notification Taken/Snooze actions, follow-up reminder scheduling, missed-dose marking while the app is open, and reminder reconciliation on startup and app foreground.
+- Three-step first-run onboarding (language, who medicines are for, optional nickname, and local-only privacy explanation). The optional profile is stored in AsyncStorage on this device.
+- Prescription photo OCR using Google ML Kit on-device text recognition. The extracted text is a draft only; medicine schedules/doses are never silently inferred, and the user must verify details against the original prescription.
 - JSON export/share; validated restore by merge or replace; previous-valid JSON recovery warning.
 - English/Hindi strings for primary workflows, larger text preference applied to most main screens and form inputs, accessibility labels and tab states.
 - No cloud sync; data remains on this device.
@@ -34,6 +36,7 @@ Use Expo Go for UI iteration only. Notification actions, exact alarms and reboot
 - JSON is not encrypted. Store exported backups securely. Restore validates the file before changing data, but recovery from every possible storage corruption scenario needs device testing.
 - Schema version is currently 1. Future schema changes must include explicit migrations; an unsupported future version should not be overwritten with defaults.
 - Hindi coverage is improved but not every system-generated error, notification string or accessibility announcement is translated. TalkBack must be tested with Hindi and English selected.
+- Prescription OCR currently accepts JPG/PNG/WebP images only (not PDFs); handwriting and non-Latin text may be inaccurate. The selected image is processed locally and is not uploaded by this feature. The OCR package is a native module and will not work in Expo Go; use an EAS/native build.
 - No automated tests, TypeScript check, Expo doctor, Android build or real-device test has been run as part of these commits. Treat this as an implementation pass, not release sign-off.
 
 ## Real-device acceptance checklist
