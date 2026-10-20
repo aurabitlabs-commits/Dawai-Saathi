@@ -16,6 +16,13 @@
       ]
     },
     "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow SehatParivaar to choose a medicine reference photo stored on this phone.",
+          "cameraPermission": "Allow SehatParivaar to take a medicine reference photo stored on this phone."
+        }
+      ],
       "expo-notifications"
     ],
     "extra": {
