@@ -4,9 +4,20 @@ import type { AppData, Medicine, DoseLog } from '../domain/types';
 import { occurrences } from './scheduleEngine';
 
 const CHANNEL='dose_reminders';
-export async function requestReminderPermissions():Promise<{granted:boolean;canAskAgain:boolean}>{
+export async function requestReminderPermissions():Promise<{granted:boolean;canAskAgain:boolean;exactAlarmGranted:boolean}>{
   if(Platform.OS==='android') await Notifications.setNotificationChannelAsync(CHANNEL,{name:'Medicine reminders',description:'Scheduled dose alerts from SehatParivaar',importance:Notifications.AndroidImportance.MAX,sound:'default',enableVibrate:true,vibrationPattern:[0,500,250,500],showBadge:true});
-  let p=await Notifications.getPermissionsAsync();if(!p.granted&&p.canAskAgain)p=await Notifications.requestPermissionsAsync();return {granted:p.granted,canAskAgain:p.canAskAgain};
+  let p=await Notifications.getPermissionsAsync();if(!p.granted&&p.canAskAgain)p=await Notifications.requestPermissionsAsync();
+  let exactAlarmGranted=true;
+  if(Platform.OS==='android'){
+    try{
+      let exact=await Notifications.getExactAlarmPermissionsAsync();
+      if(!exact.granted) exact=await Notifications.requestExactAlarmPermissionsAsync();
+      exactAlarmGranted=exact.granted;
+    }catch{
+      exactAlarmGranted=false;
+    }
+  }
+  return {granted:p.granted,canAskAgain:p.canAskAgain,exactAlarmGranted};
 }
 export async function configureDoseActions():Promise<void>{
   await Notifications.setNotificationCategoryAsync('DOSE_ACTIONS',[
@@ -29,11 +40,11 @@ export async function reconcileReminders(data:AppData):Promise<void>{
       if(data.doseLogs.some(l=>doseKey(l.medicineId,new Date(l.scheduledAt))===key&&l.status!=='pending'))continue;
       const time=at.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
       const body=[m.name,`${m.doseQuantity} ${m.doseUnit}`,m.strength,m.instructions].filter(Boolean).join(' · ');
-      await Notifications.scheduleNotificationAsync({content:{title:`SehatParivaar · Medicine time · ${time}`,body,sound:'default',priority:Notifications.AndroidNotificationPriority.MAX,categoryIdentifier:'DOSE_ACTIONS',data:{app:'sehat-parivaar',kind:'dose',medicineId:m.id,scheduledAt:at.toISOString(),doseKey:key}},trigger:{type:Notifications.SchedulableTriggerInputTypes.DATE,date:at, ...(Platform.OS==='android'?{channelId:CHANNEL}:{})}});
+      await Notifications.scheduleNotificationAsync({content:{title:`SehatParivaar · Medicine time · ${time}`,body,sound:'default',priority:Notifications.AndroidNotificationPriority.MAX,categoryIdentifier:'DOSE_ACTIONS',data:{app:'sehat-parivaar',kind:'dose',medicineId:m.id,scheduledAt:at.toISOString(),doseKey:key}},trigger:{type:Notifications.SchedulableTriggerInputTypes.DATE,date:at, ...(Platform.OS==='android'?{channelId:CHANNEL,delivery:'alarmClock' as const}:{})}});
       if(data.settings.followupEnabled){
         const follow=new Date(at.getTime()+data.settings.followupMinutes*60000);
         if(follow>now&&follow<end&&!data.doseLogs.some(l=>doseKey(l.medicineId,new Date(l.scheduledAt))===key&&['taken','skipped'].includes(l.status))){
-          await Notifications.scheduleNotificationAsync({content:{title:'SehatParivaar · Reminder',body:'Reminder: '+body,sound:'default',categoryIdentifier:'DOSE_ACTIONS',data:{app:'sehat-parivaar',kind:'followup',medicineId:m.id,scheduledAt:at.toISOString(),doseKey:key}},trigger:{type:Notifications.SchedulableTriggerInputTypes.DATE,date:follow, ...(Platform.OS==='android'?{channelId:CHANNEL}:{})}});
+          await Notifications.scheduleNotificationAsync({content:{title:'SehatParivaar · Reminder',body:'Reminder: '+body,sound:'default',categoryIdentifier:'DOSE_ACTIONS',data:{app:'sehat-parivaar',kind:'followup',medicineId:m.id,scheduledAt:at.toISOString(),doseKey:key}},trigger:{type:Notifications.SchedulableTriggerInputTypes.DATE,date:follow, ...(Platform.OS==='android'?{channelId:CHANNEL,delivery:'alarmClock' as const}:{})}});
         }
       }
     }
