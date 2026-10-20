@@ -8,7 +8,8 @@ type Props = { onConfirm:(draft:PrescriptionDraft)=>void; language:'en'|'hi' };
 const teal='#087F72', navy='#103A56';
 const MEDICINE_HINT=/\\b(?:tab(?:let)?|cap(?:sule)?|syrup|susp(?:ension)?|inj(?:ection)?|drop|oint(?:ment)?|cream|mg|mcg|g|ml|iu)\\b/i;
 const DIRECTIONS_HINT=/\\b(?:once|twice|thrice|daily|nightly|morning|evening|before food|after food|with food|od|bd|tds|qid|qhs|prn|every\\s+\\d+|\\d\\s*[-–/]\\s*\\d\\s*[-–/]\\s*\\d|for\\s+\\d+\\s+days?)\\b/i;
-function parseLine(line:string, context='') {\n const directions=line+' '+context;
+function parseLine(line:string, context='') {
+ const directions=line+' '+context;
  const strength=line.match(/\\b\\d+(?:\\.\\d+)?\\s*(?:mg|mcg|g|ml|%|iu)\\b/i)?.[0]??'';
  const qty=line.match(/\\b(\\d+(?:\\.\\d+)?)\\s*(tablet|tab|capsule|cap|ml|drop|puff)s?\\b/i);
  const clean=line
