@@ -17,6 +17,8 @@ export interface Medicine {
   id: string;
   name: string;
   strength?: string;
+  /** Optional local image URI for user visual reference; not a verified pill identity. */
+  photoUri?: string;
   form: MedicineForm;
   doseQuantity: number;
   doseUnit: string;
