@@ -17,6 +17,10 @@ export interface Medicine {
   id: string;
   name: string;
   strength?: string;
+  /** User-reviewed prescription directions; not converted into reminder times automatically. */
+  frequencyText?: string;
+  /** User-reviewed duration text from the prescription, if provided. */
+  durationText?: string;
   /** Optional local image URI for user visual reference; not a verified pill identity. */
   photoUri?: string;
   form: MedicineForm;
