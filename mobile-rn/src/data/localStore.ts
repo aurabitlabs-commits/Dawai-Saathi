@@ -21,7 +21,11 @@ function validMedicine(x: unknown): x is Medicine {
 }
 function validLog(x: unknown): x is DoseLog {
   if(!x||typeof x!=='object')return false; const d=x as DoseLog;
-  return typeof d.id==='string'&&typeof d.medicineId==='string'&&!Number.isNaN(Date.parse(d.scheduledAt))&&validDate(d.localDate)&&['pending','taken','skipped','missed'].includes(d.status)&&Number.isInteger(d.snoozeCount)&&d.snoozeCount>=0;
+  return typeof d.id==='string'&&typeof d.medicineId==='string'&&!Number.isNaN(Date.parse(d.scheduledAt))&&validDate(d.localDate)&&['pending','taken','skipped','missed'].includes(d.status)&&Number.isInteger(d.snoozeCount)&&d.snoozeCount>=0&&
+    (d.actedAt===undefined||!Number.isNaN(Date.parse(d.actedAt)))&&
+    (d.snoozeUntil===undefined||!Number.isNaN(Date.parse(d.snoozeUntil)))&&
+    (d.snoozeHistory===undefined||Array.isArray(d.snoozeHistory)&&d.snoozeHistory.every(time=>typeof time==='string'&&!Number.isNaN(Date.parse(time))))&&
+    (d.responseReason===undefined||['forgot','unavailable','intentionally_skipped'].includes(d.responseReason));
 }
 function validateData(value: unknown): value is AppData {
   if(!value||typeof value!=='object')return false; const v=value as Partial<AppData>;

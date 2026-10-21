@@ -46,6 +46,9 @@ export interface DoseLog {
   status: DoseStatus;
   actedAt?: string;
   snoozeCount: number;
+  responseReason?: 'forgot' | 'unavailable' | 'intentionally_skipped';
+  snoozeUntil?: string;
+  snoozeHistory?: string[];
 }
 export interface AppSettings {
   language: 'en' | 'hi';
