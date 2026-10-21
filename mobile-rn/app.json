@@ -9,10 +9,11 @@
     "android": {
       "package": "com.sehatparivaar.app",
       "permissions": [
-        "POST_NOTIFICATIONS",
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "SCHEDULE_EXACT_ALARM"
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -26,7 +27,10 @@
       "expo-notifications"
     ],
     "extra": {
-      "offlineOnly": true
+      "offlineOnly": true,
+      "eas": {
+        "projectId": "57bce990-1218-4420-8723-fa25c865fa4a"
+      }
     }
   }
 }

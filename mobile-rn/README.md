@@ -17,13 +17,14 @@ Use Expo Go for UI iteration only. Notification actions, exact alarms and reboot
 
 ## Implemented in the current starter
 
-- Add and edit medicines; delete medicine while retaining historical dose logs.
+- Guided add/edit medicine form with medicine-form selection, dose/unit presets, reminder-time shortcuts, and grouped schedule/date/stock sections; delete medicine while retaining historical dose logs.
 - Multiple daily reminder times (up to eight), daily / selected-weekday / interval schedules, start/end date validation, dose quantity and instructions.
 - Basic stock count +/- controls and refill-threshold warning.
 - Today dose Taken / Skip / Snooze controls and dose history.
+- Refreshed reminder and history screen colors, with seven-day dose totals, adherence rate and a taken/missed/skipped bar chart.
 - Per-occurrence semantic notification keys, notification Taken/Snooze actions, follow-up reminder scheduling, missed-dose marking while the app is open, and reminder reconciliation on startup and app foreground.
 - Three-step first-run onboarding (language, who medicines are for, optional nickname, and local-only privacy explanation). The optional profile is stored in AsyncStorage on this device.
-- Prescription photo OCR using Google ML Kit on-device text recognition, followed by an editable review form for name, strength, dose quantity/unit, frequency, duration and instructions. OCR output is only a draft; reminder times must be entered separately and no medicine is saved until the user confirms and completes the medicine form.
+- Prescription photo OCR using Google ML Kit on-device text recognition, followed by an editable review form for name, strength, dose quantity/unit, frequency, duration and instructions. Parsing recognizes common printed medicine labels, strengths, explicit quantities and dose schedules such as `1-0-1`; handwriting and unusual layouts may still need manual correction. OCR output is only a draft; reminder times must be entered separately and no medicine is saved until the user confirms and completes the medicine form.
 - Optional medicine reference photos selected from camera or gallery, copied to app-private local storage and displayed on medicine cards. Photos are visual aids only, not verified pill identification. JSON backups do not include photo bytes; a photo URI on another device will not restore the image.
 - JSON export/share; validated restore by merge or replace; previous-valid JSON recovery warning.
 - English/Hindi strings for primary workflows, larger text preference applied to most main screens and form inputs, accessibility labels and tab states.
@@ -32,7 +33,7 @@ Use Expo Go for UI iteration only. Notification actions, exact alarms and reboot
 ## Important limitations — not yet verified as production-ready
 
 - The notification library/platform may assign opaque native notification identifiers; the app uses stable semantic dose keys in notification payloads and reconciles its scheduled notifications. This is not the same as a guaranteed stable OS identifier.
-- Android/OEM delivery cannot be guaranteed from JavaScript alone. Reboot rescheduling, exact-alarm access, battery restrictions, force-stop behavior, notification actions from a killed process, time-zone changes and DST must be verified on a native build and the target phone. Foreground reconciliation is implemented; do not assume it can run while the OS has stopped the app.
+- Android/OEM delivery cannot be guaranteed from JavaScript alone. Reminders are scheduled with the OS and can be delivered while the app is closed, but Android notification permission, the "Medicine reminders" channel's sound setting, exact-alarm access, battery restrictions, force-stop behavior, notification actions from a killed process, time-zone changes and DST must be verified on a native build and the target phone. The app currently queues the next 14 days of reminders, so open it periodically to refresh the schedule. The audible channel configuration requires a rebuilt app; after installing the update, open it once to create the new channel and reschedule existing reminders, then verify notifications and sound are enabled in Android settings. Foreground reconciliation is implemented; do not assume it can run while the OS has stopped the app.
 - Missed-dose detection runs when the app is open. It does not run as a guaranteed background worker.
 - JSON is not encrypted. Store exported backups securely. Restore validates the file before changing data, but recovery from every possible storage corruption scenario needs device testing.
 - Schema version is currently 1. Future schema changes must include explicit migrations; an unsupported future version should not be overwritten with defaults.
@@ -43,7 +44,7 @@ Use Expo Go for UI iteration only. Notification actions, exact alarms and reboot
 
 ## Real-device acceptance checklist
 
-1. Allow/deny notification permission on Android 13+ and verify the settings explanation.
+1. Allow/deny notification permission on Android 13+; verify the "Medicine reminders" notification channel is enabled and makes sound.
 2. Test multiple times, weekday masks, interval schedules, invalid dates, end-before-start, duplicate times and medicine edits/deletion.
 3. Verify Taken and Snooze actions when app is foregrounded, backgrounded and removed from Recents.
 4. Test follow-up, missed dose, low stock, export/share, invalid JSON restore, merge, replace and recovery from a damaged primary data value.

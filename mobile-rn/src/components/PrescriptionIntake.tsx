@@ -6,35 +6,57 @@ import TextRecognition from '@react-native-ml-kit/text-recognition';
 export type PrescriptionDraft = { name:string; strength:string; doseQuantity:string; doseUnit:string; frequency:string; duration:string; instructions:string; rawText:string; sourceUri:string };
 type Props = { onConfirm:(draft:PrescriptionDraft)=>void; language:'en'|'hi' };
 const teal='#087F72', navy='#103A56';
-const MEDICINE_HINT=/\\b(?:tab(?:let)?|cap(?:sule)?|syrup|susp(?:ension)?|inj(?:ection)?|drop|oint(?:ment)?|cream|mg|mcg|g|ml|iu)\\b/i;
-const DIRECTIONS_HINT=/\\b(?:once|twice|thrice|daily|nightly|morning|evening|before food|after food|with food|od|bd|tds|qid|qhs|prn|every\\s+\\d+|\\d\\s*[-–/]\\s*\\d\\s*[-–/]\\s*\\d|for\\s+\\d+\\s+days?)\\b/i;
+const MEDICINE_HINT=/\b(?:tab(?:let)?|cap(?:sule)?|syrup|susp(?:ension)?|inj(?:ection)?|drop|oint(?:ment)?|cream|mg|mcg|g|ml|iu)\b/i;
+const DIRECTIONS_HINT=/\b(?:once|twice|thrice|daily|nightly|morning|evening|before food|after food|with food|od|bd|tds|qid|qhs|prn|every\s+\d+|\d+\s*[-–/]\s*\d+\s*[-–/]\s*\d+|for\s+\d+\s+days?)\b/i;
+const MEDICINE_HEADER=/^\s*(?:dr\.?|doctor|patient|age|date|diagnosis|address|phone|reg\.?|signature|prescription| Rx\b)/i;
+const linesFromText=(text:string)=>text.split(/\r?\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+function contextForLine(lines:string[],index:number) {
+ return [lines[index-1],lines[index+1]].filter((line):line is string=>!!line&&!MEDICINE_HEADER.test(line)&&(MEDICINE_HINT.test(line)||DIRECTIONS_HINT.test(line))).join(' ');
+}
+
 function parseLine(line:string, context='') {
- const directions=line+' '+context;
- const strength=line.match(/\\b\\d+(?:\\.\\d+)?\\s*(?:mg|mcg|g|ml|%|iu)\\b/i)?.[0]??'';
- const qty=line.match(/\\b(\\d+(?:\\.\\d+)?)\\s*(tablet|tab|capsule|cap|ml|drop|puff)s?\\b/i);
+ const source=`${line} ${context}`.replace(/[‐‑‒–—]/g,'-');
+ const strength=source.match(/\b\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|%|iu)\b/i)?.[0]??'';
+ const explicitDose=source.match(/\b(?:(\d+(?:\.\d+)?)\s*\/\s*)?(\d+(?:\.\d+)?)\s*(tablets?|tabs?|capsules?|caps?|ml|drops?|puffs?|teaspoons?|tsps?|tablespoons?|tbsps?)\b/i);
+ const dosePattern=source.match(/\b(\d+(?:\.\d+)?)\s*[-/]\s*(\d+(?:\.\d+)?)\s*[-/]\s*(\d+(?:\.\d+)?)(?:\s*[-/]\s*(\d+(?:\.\d+)?))?\b/);
+ const form=source.match(/\b(tab(?:let)?s?|cap(?:sule)?s?|syrup|susp(?:ension)?|inj(?:ection)?|drops?|cream|ointment|puffs?)\b/i)?.[0].toLowerCase()??'';
+ const explicitUnit=explicitDose?.[3]?.toLowerCase()??'';
+ const doseUnit=explicitUnit.startsWith('tab')||form.startsWith('tab')?'tablet'
+  :explicitUnit.startsWith('cap')||form.startsWith('cap')?'capsule'
+  :explicitUnit.startsWith('ml')?'ml'
+  :explicitUnit.startsWith('drop')||form.startsWith('drop')?'drop'
+  :explicitUnit.startsWith('puff')||form.startsWith('puff')?'puff'
+  :explicitUnit.startsWith('tsp')||explicitUnit.startsWith('teaspoon')?'teaspoon'
+  :explicitUnit.startsWith('tbsp')||explicitUnit.startsWith('tablespoon')?'tablespoon'
+  :form.startsWith('syrup')||form.startsWith('susp')?'ml'
+  :form.startsWith('inj')?'injection':'dose';
+ const gridQuantity=dosePattern?Math.max(...dosePattern.slice(1).filter(Boolean).map(Number)):undefined;
+ const explicitQuantity=explicitDose?(explicitDose[1]?Number(explicitDose[1])/Number(explicitDose[2]):Number(explicitDose[2])):undefined;
+ const doseQuantity=explicitQuantity!==undefined&&explicitQuantity>0?String(explicitQuantity):(gridQuantity!==undefined&&gridQuantity>0?String(gridQuantity):'');
  const clean=line
-  .replace(/\\b(?:tab(?:let)?|cap(?:sule)?|syrup|susp(?:ension)?|inj(?:ection)?|drop|oint(?:ment)?|cream)\\b/ig,' ')
-  .replace(/\\b\\d+(?:\\.\\d+)?\\s*(?:mg|mcg|g|ml|%|iu)\\b/ig,' ')
-  .replace(/\\b\\d+(?:\\.\\d+)?\\s*(?:tablet|tab|capsule|cap|ml|drop|puff)s?\\b/ig,' ')
-  .replace(/\\b(?:od|bd|tds|qid|qhs|hs|ac|pc|prn|stat)\\b/ig,' ')
-  .replace(/\\b\\d+\\s*[-–/]\\s*\\d+\\s*[-–/]\\s*\\d+\\b/g,' ')
-  .replace(/\\b(?:once|twice|thrice)\\s+(?:a\\s+)?daily\\b/ig,' ')
-  .replace(/\\b(?:daily|nightly|morning|evening|before food|after food|with food|for\\s+\\d+\\s+days?)\\b/ig,' ')
-  .replace(/[^a-zA-Z\\u0900-\\u097F\\s-]/g,' ').replace(/\\s+/g,' ').trim();
- const schedule=directions.match(/\\b(?:once|twice|thrice)\\s+(?:a\\s+)?daily\\b|\\bevery\\s+\\d+\\s*(?:hours?|hrs?)\\b|\\b(?:od|bd|tds|qid|qhs|hs|prn)\\b|\\b\\d+\\s*[-–/]\\s*\\d+\\s*[-–/]\\s*\\d+\\b|\\b(?:once|twice|thrice)\\s+daily\\b/i)?.[0]??'';
- const duration=directions.match(/\\b(?:for\\s+)?\\d+\\s*(?:days?|weeks?)\\b/i)?.[0]??'';
- const instruction=directions.match(/\\b(?:before food|after food|with food|before meals?|after meals?|at bedtime)\\b|खाने से पहले|खाने के बाद/i)?.[0]??'';
- const unit=qty?.[2]?.toLowerCase()??'';
- return {name:clean.slice(0,80),strength,doseQuantity:qty?.[1]??'',doseUnit:unit.startsWith('tab')?'tablet':unit.startsWith('cap')?'capsule':unit,frequency:schedule,duration,instructions:instruction};
+  .replace(/^\s*(?:take|give|use|apply|continue|start|stop)\b\s*/i,'')
+  .replace(/^\s*(?:tab(?:let)?|cap(?:sule)?|syp|syr|susp(?:ension)?|inj(?:ection)?|drop|oint(?:ment)?|cream)\.?\s+/i,'')
+  .replace(/\b(?:a|an|one|two|three|half)\s+(?:tablets?|tabs?|capsules?|caps?|ml|drops?|puffs?|teaspoons?|tsps?|tablespoons?|tbsps?)\b/ig,' ')
+  .replace(/\b\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|%|iu)\b/ig,' ')
+  .replace(/\b(?:\d+(?:\.\d+)?\s*\/\s*)?\d+(?:\.\d+)?\s*(?:tablets?|tabs?|capsules?|caps?|ml|drops?|puffs?|teaspoons?|tsps?|tablespoons?|tbsps?)\b/ig,' ')
+  .replace(/\b(?:tab(?:let)?s?|cap(?:sule)?s?|syrup|susp(?:ension)?|inj(?:ection)?|drops?|ointment|cream|od|bd|tds|qid|qhs|hs|ac|pc|prn|stat)\b/ig,' ')
+  .replace(/\b\d+(?:\.\d+)?\s*[-/]\s*\d+(?:\.\d+)?\s*[-/]\s*\d+(?:\.\d+)?(?:\s*[-/]\s*\d+(?:\.\d+)?)?\b/g,' ')
+  .replace(/\b(?:once|twice|thrice)\s+(?:a\s+)?daily\b|\bevery\s+\d+\s*(?:hours?|hrs?)\b|\b(?:daily|nightly|morning|evening|before food|after food|with food|for\s+\d+\s+days?|x\s+\d+\s+(?:days?|weeks?))\b/ig,' ')
+  .replace(/[^a-zA-Z\u0900-\u097F\s-]/g,' ').replace(/\s+/g,' ').trim();
+ const frequency=source.match(/\b(?:once|twice|thrice)\s+(?:a\s+)?daily\b|\bevery\s+\d+\s*(?:hours?|hrs?)\b|\b(?:od|bd|tds|qid|qhs|hs|prn)\b|\b\d+(?:\.\d+)?\s*[-/]\s*\d+(?:\.\d+)?\s*[-/]\s*\d+(?:\.\d+)?(?:\s*[-/]\s*\d+(?:\.\d+)?)?\b/i)?.[0]??'';
+ const duration=source.match(/\b(?:for\s+)?\d+\s*(?:days?|weeks?)\b/i)?.[0]??'';
+ const instructions=source.match(/\b(?:before food|after food|with food|before meals?|after meals?|at bedtime)\b|खाने से पहले|खाने के बाद/i)?.[0]??'';
+ return {name:clean.slice(0,80),strength,doseQuantity,doseUnit,frequency,duration,instructions};
 }
 export default function PrescriptionIntake({onConfirm,language}:Props) {
  const [busy,setBusy]=useState(false),[fileName,setFileName]=useState(''),[imageUri,setImageUri]=useState(''),[rawText,setRawText]=useState(''),[reviewing,setReviewing]=useState(false);
  const [name,setName]=useState(''),[strength,setStrength]=useState(''),[doseQuantity,setDoseQuantity]=useState(''),[doseUnit,setDoseUnit]=useState('tablet'),[frequency,setFrequency]=useState(''),[duration,setDuration]=useState(''),[instructions,setInstructions]=useState(''),[medicineLines,setMedicineLines]=useState<string[]>([]),[selectedLine,setSelectedLine]=useState('');
  const hi=language==='hi',t=(en:string,hn:string)=>hi?hn:en;
  const field=(label:string,value:string,set:(v:string)=>void,placeholder='')=><View style={s.field}><Text style={s.label}>{label}</Text><TextInput accessibilityLabel={label} value={value} onChangeText={set} placeholder={placeholder} style={s.input}/></View>;
- const select=async()=>{try{const result=await DocumentPicker.getDocumentAsync({type:['image/jpeg','image/png','image/webp'],copyToCacheDirectory:true,multiple:false});if(result.canceled||!result.assets?.[0])return;const file=result.assets[0];setFileName(file.name);setImageUri(file.uri);setBusy(true);setRawText('');setMedicineLines([]);setSelectedLine('');const recognized=await TextRecognition.recognize(file.uri);const extracted=(recognized?.text??'').trim();setRawText(extracted);const lines=extracted.split(/\\n+/).map(x=>x.trim()).filter(Boolean);const candidates=lines.filter(x=>MEDICINE_HINT.test(x)&&!/^\\s*(?:dr\\.?|doctor|patient|age|date|diagnosis|address|phone|reg\\.?|signature)\\b/i.test(x)&&x.length<180);setMedicineLines([...new Set(candidates)]);const first=candidates[0]??lines.find(x=>/\\d|mg|mcg|ml/i.test(x))??'';if(first){setSelectedLine(first);const firstIndex=lines.indexOf(first);const adjacent=[lines[firstIndex-1],lines[firstIndex+1]].filter((x):x is string=>!!x&&!MEDICINE_HINT.test(x)&&DIRECTIONS_HINT.test(x)).join(' ');const p=parseLine(first,adjacent);setName(p.name);setStrength(p.strength);setDoseQuantity(p.doseQuantity);setDoseUnit(p.doseUnit||'tablet');setFrequency(p.frequency);setDuration(p.duration);setInstructions(p.instructions);}else{setName('');setStrength('');setDoseQuantity('');setFrequency('');setDuration('');setInstructions('');}setReviewing(true);if(!extracted)Alert.alert(t('No readable text found','पढ़ने योग्य टेक्स्ट नहीं मिला'),t('You can still enter the details manually.','आप जानकारी स्वयं दर्ज कर सकते हैं।'));else if(candidates.length===0)Alert.alert(t('No clear medicine lines found','दवा की स्पष्ट पंक्तियाँ नहीं मिलीं'),t('Tap a detected text line below or type the medicine details manually. OCR may not separate every medicine correctly.','नीचे पढ़ी गई पंक्ति चुनें या दवा की जानकारी स्वयं लिखें। OCR हर दवा को सही अलग नहीं कर सकता।'));}catch{Alert.alert(t('Could not read image','तस्वीर पढ़ी नहीं जा सकी'),t('Choose a clearer image or enter details manually.','साफ़ तस्वीर चुनें या जानकारी स्वयं दर्ज करें।'));}finally{setBusy(false);}};
- const lines=useMemo(()=>rawText.split(/\\n+/).map(x=>x.trim()).filter(Boolean).slice(0,40),[rawText]);
- const chooseLine=(line:string)=>{setSelectedLine(line);const all=rawText.split(/\\n+/).map(x=>x.trim()).filter(Boolean),idx=all.indexOf(line);const adjacent=[all[idx-1],all[idx+1]].filter((x):x is string=>!!x&&!MEDICINE_HINT.test(x)&&DIRECTIONS_HINT.test(x)).join(' ');const p=parseLine(line,adjacent);setName(p.name);setStrength(p.strength);setDoseQuantity(p.doseQuantity);setDoseUnit(p.doseUnit||'tablet');setFrequency(p.frequency);setDuration(p.duration);setInstructions(p.instructions);};
+ const applyParsedLine=(line:string,allLines:string[])=>{const index=allLines.indexOf(line),p=parseLine(line,contextForLine(allLines,index));setSelectedLine(line);setName(p.name);setStrength(p.strength);setDoseQuantity(p.doseQuantity);setDoseUnit(p.doseUnit);setFrequency(p.frequency);setDuration(p.duration);setInstructions(p.instructions);};
+ const select=async()=>{try{const result=await DocumentPicker.getDocumentAsync({type:['image/jpeg','image/png','image/webp'],copyToCacheDirectory:true,multiple:false});if(result.canceled||!result.assets?.[0])return;const file=result.assets[0];setFileName(file.name);setImageUri(file.uri);setBusy(true);setRawText('');setMedicineLines([]);setSelectedLine('');const recognized=await TextRecognition.recognize(file.uri);const extracted=(recognized?.text??'').trim();setRawText(extracted);const allLines=linesFromText(extracted);const candidates=allLines.filter((line,index)=>{if(MEDICINE_HEADER.test(line)||line.length>=180)return false;const context=contextForLine(allLines,index);return parseLine(line,context).name.length>1&&(MEDICINE_HINT.test(line)||DIRECTIONS_HINT.test(line)||MEDICINE_HINT.test(context)||DIRECTIONS_HINT.test(context));});const uniqueCandidates=[...new Set(candidates)];setMedicineLines(uniqueCandidates);const first=uniqueCandidates[0]??'';if(first)applyParsedLine(first,allLines);else{setName('');setStrength('');setDoseQuantity('');setDoseUnit('dose');setFrequency('');setDuration('');setInstructions('');}setReviewing(true);if(!extracted)Alert.alert(t('No readable text found','पढ़ने योग्य टेक्स्ट नहीं मिला'),t('You can still enter the details manually.','आप जानकारी स्वयं दर्ज कर सकते हैं。'));else if(uniqueCandidates.length===0)Alert.alert(t('No clear medicine lines found','दवा की स्पष्ट पंक्तियाँ नहीं मिलीं'),t('Tap a detected text line below or type the medicine details manually. OCR may not separate every medicine correctly.','नीचे पढ़ी गई पंक्ति चुनें या दवा की जानकारी स्वयं लिखें। OCR हर दवा को सही अलग नहीं कर सकता।'));}catch{Alert.alert(t('Could not read image','तस्वीर पढ़ी नहीं जा सकी'),t('Choose a clearer image or enter details manually.','साफ़ तस्वीर चुनें या जानकारी स्वयं दर्ज करें।'));}finally{setBusy(false);}};
+ const lines=useMemo(()=>linesFromText(rawText).slice(0,40),[rawText]);
+ const chooseLine=(line:string)=>applyParsedLine(line,linesFromText(rawText));
  const confirm=()=>{if(!name.trim()){Alert.alert(t('Medicine name needed','दवा का नाम ज़रूरी है'),t('Enter or correct the medicine name first.','पहले दवा का नाम दर्ज या सही करें।'));return;}if(doseQuantity.trim()&&(!Number.isFinite(Number(doseQuantity))||Number(doseQuantity)<=0)){Alert.alert(t('Check dose','खुराक जाँचें'),t('Enter a positive quantity or leave it blank if unclear.','सही मात्रा दर्ज करें या स्पष्ट न हो तो खाली छोड़ें।'));return;}onConfirm({name:name.trim(),strength:strength.trim(),doseQuantity:doseQuantity.trim(),doseUnit:doseUnit.trim()||'dose',frequency:frequency.trim(),duration:duration.trim(),instructions:instructions.trim(),rawText,sourceUri:imageUri});};
  return <ScrollView contentContainerStyle={s.wrap}>
   <View style={s.hero}><View style={s.badge}><Text style={s.badgeText}>{t('ON-DEVICE SCAN','फ़ोन पर स्कैन')}</Text></View><Text style={s.title}>{t('Add from prescription','पर्चे से दवा जोड़ें')}</Text><Text style={s.subtitle}>{t('Choose a clear photo. We prepare an editable draft—not a confirmed dose. Nothing is saved until you review it.', 'साफ़ तस्वीर चुनें। हम संपादन योग्य ड्राफ़्ट बनाएँगे, पुष्टि की गई खुराक नहीं। जाँचने से पहले कुछ सेव नहीं होगा।')}</Text><Pressable accessibilityRole="button" onPress={()=>void select()} style={s.primary}><Text style={s.primaryText}>{t('＋ Choose prescription photo','＋ पर्चे की तस्वीर चुनें')}</Text></Pressable>{busy&&<View style={s.loading}><ActivityIndicator color={teal}/><Text style={s.subtitle}>{t('Reading on this phone…','फ़ोन पर पढ़ा जा रहा है…')}</Text></View>}{!!fileName&&<Text style={s.file}>{fileName}</Text>}</View>
