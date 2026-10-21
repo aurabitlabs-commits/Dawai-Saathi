@@ -5,6 +5,20 @@ import { MealRelation, MedicineForm, PillAppearance } from '../../types';
 import { PillImagePicker } from './PillImagePicker';
 import { Clock, Edit3, Mic, Pill, Plus, X } from 'lucide-react';
 
+const toTimeInputValue = (time: string) => {
+  const match = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(time.trim());
+  if (!match) return '08:00';
+  let hours = Number(match[1]) % 12;
+  if (match[3].toUpperCase() === 'PM') hours += 12;
+  return `${String(hours).padStart(2, '0')}:${match[2]}`;
+};
+
+const toDisplayTime = (time: string) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  return `${String(hours % 12 || 12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+};
+
 export const AddMedicineModal: React.FC = () => {
   const {
     showAddMedicine,
@@ -374,20 +388,19 @@ export const AddMedicineModal: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                समय (Time)
+                <span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> समय (Schedule time)</span>
               </label>
-              <select
-                value={time}
-                onChange={e => setTime(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="08:00 AM">08:00 AM (सुबह)</option>
-                <option value="09:00 AM">09:00 AM (सुबह)</option>
-                <option value="01:00 PM">01:00 PM (दोपहर)</option>
-                <option value="05:00 PM">05:00 PM (शाम)</option>
-                <option value="08:00 PM">08:00 PM (रात)</option>
-                <option value="10:00 PM">10:00 PM (सोते समय)</option>
-              </select>
+              <input
+                type="time"
+                step="60"
+                value={toTimeInputValue(time)}
+                onChange={e => {
+                  if (e.target.value) setTime(toDisplayTime(e.target.value));
+                }}
+                required
+                className="w-full min-h-[46px] px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Schedule time"
+              />
             </div>
 
             <div>

@@ -25,7 +25,10 @@ export const HeaderBar: React.FC<{
   const unhandledAlerts = alerts.filter(a => a.status === 'unclaimed').length;
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 py-2.5 shadow-xs">
+    <header
+      className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 pb-2.5 shadow-xs"
+      style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.875rem)' }}
+    >
       <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
         {/* Brand Zone */}
         <div className="flex items-center gap-2.5 shrink-0">
