@@ -70,7 +70,7 @@ export async function scheduleSnoozeReminder(medicine:Medicine,scheduledAt:strin
   await cancelDoseReminders(key);
   await scheduleReminder(medicine,at,'snooze',language,snoozeCount,snoozeUntil);
 }
-export async function reconcileReminders(data:AppData):Promise<void>{
+async function reconcileRemindersInternal(data:AppData):Promise<void>{
   const now=new Date(),end=new Date(now.getTime()+SCHEDULE_AHEAD_DAYS*24*60*60*1000);
   const medicines=new Map(data.medicines.filter(m=>m.isActive).map(m=>[m.id,m]));
   const desired=new Map<string,{medicine:Medicine;at:Date;kind:DoseNotificationData['kind'];count:number}>();
@@ -120,3 +120,17 @@ export async function reconcileReminders(data:AppData):Promise<void>{
 export async function cancelMedicineReminders(medicineId:string):Promise<void>{for(const n of await Notifications.getAllScheduledNotificationsAsync())if(n.content.data?.app==='sehat-parivaar'&&n.content.data?.medicineId===medicineId)await Notifications.cancelScheduledNotificationAsync(n.identifier);}
 export function findDoseLog(data:AppData,medicineId:string,scheduledAt:string):DoseLog|undefined{return data.doseLogs.find(l=>l.medicineId===medicineId&&l.scheduledAt===scheduledAt);}
 export type { Medicine };
+
+
+// Serialize reconciliation calls. Startup, app-resume and save flows can run close
+// together; without a queue they can all read the same empty schedule and create
+// duplicate notifications for the same dose.
+let reconcileQueue:Promise<void>=Promise.resolve();
+export function reconcileReminders(data:AppData):Promise<void>{
+  const run=reconcileQueue.then(
+    ()=>reconcileRemindersInternal(data),
+    ()=>reconcileRemindersInternal(data),
+  );
+  reconcileQueue=run.catch(()=>undefined);
+  return run;
+}
