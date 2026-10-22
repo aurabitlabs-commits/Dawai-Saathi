@@ -5,7 +5,7 @@
   "main": "expo/AppEntry",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
+    "android": "expo run:android",
     "ios": "expo start --ios",
     "typecheck": "tsc --noEmit"
   },

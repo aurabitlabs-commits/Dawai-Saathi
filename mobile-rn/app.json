@@ -13,6 +13,7 @@
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.VIBRATE",
         "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.USE_FULL_SCREEN_INTENT",
         "android.permission.RECORD_AUDIO"
       ]
     },
@@ -24,7 +25,8 @@
           "cameraPermission": "Allow SehatParivaar to take a medicine reference photo stored on this phone."
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "./plugins/withFullScreenMedicineAlarm"
     ],
     "extra": {
       "offlineOnly": true,

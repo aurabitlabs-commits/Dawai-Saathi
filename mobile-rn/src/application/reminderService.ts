@@ -57,6 +57,7 @@ async function scheduleReminder(medicine:Medicine,at:Date,kind:DoseNotificationD
       sound:'default',
       priority:Notifications.AndroidNotificationPriority.MAX,
       categoryIdentifier:'DOSE_ACTIONS',
+      ...(Platform.OS==='android'?{autoDismiss:false,sticky:true}:{}),
       data:{app:'sehat-parivaar',kind,medicineId:medicine.id,scheduledAt:at.toISOString(),doseKey:key,snoozeCount} satisfies DoseNotificationData,
     },
     trigger:{type:Notifications.SchedulableTriggerInputTypes.DATE,date:triggerAt,...(Platform.OS==='android'?{channelId:REMINDER_CHANNEL_ID}:{})},
