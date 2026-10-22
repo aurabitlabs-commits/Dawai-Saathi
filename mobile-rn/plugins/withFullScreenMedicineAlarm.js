@@ -61,7 +61,7 @@ function withFullScreenMedicineAlarm(config) {
       defaultAction
     )
     builder.setContentIntent(contentIntent)
-    if (content.isSticky && content.categoryId == "DOSE_ACTIONS" && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    if (content.categoryId == "DOSE_ACTIONS" && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       builder.setCategory(NotificationCompat.CATEGORY_ALARM)
       builder.setFullScreenIntent(contentIntent, true)
     }`
